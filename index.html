@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="description" content="Nothing To-Do — Google Drive synced task manager">
+<link rel="manifest" href="manifest.json">
+<title>Nothing To-Do</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+
+<!-- ┌─────────────────────────────────────────────────┐
+     │  DEINE GOOGLE CLIENT ID HIER EINTRAGEN:         │
+     │  (Anleitung: siehe README.md)                    │
+     └─────────────────────────────────────────────────┘ -->
+<meta name="google-client-id" content="368244766898-da615t6bjr0q8lr0ujvqa362dd3c999q.apps.googleusercontent.com">
+
+<style>
+:root{
+  --bg:#000;--sf:#080808;--cd:#0c0c0c;
+  --red:#D71921;--rs:rgba(215,25,33,.12);--rg:rgba(215,25,33,.25);--rd:rgba(215,25,33,.45);
+  --grn:#2ECC40;--ylw:#FFDC00;
+  --w:#fff;--w90:rgba(255,255,255,.9);--w70:rgba(255,255,255,.7);--w50:rgba(255,255,255,.5);
+  --w30:rgba(255,255,255,.3);--w15:rgba(255,255,255,.15);--w08:rgba(255,255,255,.08);--w04:rgba(255,255,255,.04);
+  --mono:'Space Mono','Courier New',monospace;--sans:'DM Sans',-apple-system,'Segoe UI',sans-serif;
+  --st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);--r:3px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;width:100%;background:var(--bg);color:var(--w);font-family:var(--sans);overflow:hidden;-webkit-font-smoothing:antialiased}
+
+#boot{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s,visibility .5s}
+#boot.x{opacity:0;visibility:hidden;pointer-events:none}
+.boot-r{width:44px;height:44px;border:1.5px solid var(--w15);border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.boot-t{margin-top:22px;font-family:var(--mono);font-size:10px;letter-spacing:6px;text-transform:uppercase;color:var(--w30)}
+
+#login{position:fixed;inset:0;z-index:8000;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;transition:opacity .4s,visibility .4s}
+#login.x{opacity:0;visibility:hidden;pointer-events:none}
+.l-dot{width:12px;height:12px;border-radius:50%;background:var(--red);margin-bottom:28px;box-shadow:0 0 20px var(--rg)}
+.l-title{font-family:var(--mono);font-size:16px;font-weight:700;letter-spacing:4px;text-transform:uppercase;margin-bottom:6px}
+.l-sub{font-size:13px;color:var(--w30);text-align:center;max-width:300px;line-height:1.7;margin-bottom:36px}
+.l-btn{padding:13px 36px;border:1px solid var(--red);border-radius:var(--r);background:transparent;color:var(--w);font-family:var(--mono);font-size:11px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:10px}
+.l-btn:hover{background:var(--red);box-shadow:0 0 28px var(--rg)}
+.l-btn svg{flex-shrink:0}
+.l-off{margin-top:16px;background:none;border:1px solid var(--w08);color:var(--w15);padding:9px 24px;border-radius:var(--r);font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.l-off:hover{border-color:var(--w30);color:var(--w30)}
+
+#app{display:none;flex-direction:column;height:100%;width:100%;max-width:540px;margin:0 auto;padding-top:var(--st);padding-bottom:var(--sb)}
+#app.on{display:flex}
+
+.hd{flex-shrink:0;padding:14px 20px 0;display:flex;align-items:center;justify-content:space-between}
+.hd-l{display:flex;align-items:center;gap:10px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--w15);transition:all .3s}
+.dot.sync{background:var(--red);animation:pulse 1s ease-in-out infinite}
+.dot.ok{background:var(--grn);box-shadow:0 0 8px rgba(46,204,64,.3)}
+.dot.off{background:var(--ylw);box-shadow:0 0 8px rgba(255,220,0,.3)}
+.dot.err{background:var(--red);box-shadow:0 0 8px var(--rg)}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+.hd-t{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase}
+.hd-r{display:flex;gap:2px}
+.ib{width:36px;height:36px;border-radius:50%;border:none;background:transparent;color:var(--w30);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s}
+.ib:hover{color:var(--w70);background:var(--w04)}
+.ib.spin svg{animation:spin .7s linear infinite}
+
+.syncb{flex-shrink:0;height:24px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--w08);transition:color .3s}
+.syncb.act{color:var(--rd)}.syncb.ok{color:rgba(46,204,64,.3)}
+
+.tabs{flex-shrink:0;display:flex;padding:0 20px;border-bottom:1px solid var(--w04)}
+.tab{flex:1;padding:13px 0 11px;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;text-align:center;color:var(--w15);background:none;border:none;cursor:pointer;position:relative;transition:color .2s}
+.tab:hover{color:var(--w30)}.tab.on{color:var(--w90)}
+.tab::after{content:'';position:absolute;bottom:-1px;left:20%;right:20%;height:1px;background:var(--red);transform:scaleX(0);transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.tab.on::after{transform:scaleX(1)}
+.tab .c{display:inline-block;margin-left:4px;font-family:var(--sans);font-size:9px;font-weight:400;color:inherit;opacity:.3}
+
+.ls{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 20px 110px;-webkit-overflow-scrolling:touch}
+.ls::-webkit-scrollbar{width:2px}.ls::-webkit-scrollbar-thumb{background:var(--w04)}
+
+.ey{display:flex;flex-direction:column;align-items:center;justify-content:center;height:50vh;text-align:center;animation:up .4s ease}
+@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.ey-i{width:52px;height:52px;border-radius:50%;border:1px dashed var(--w08);display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.ey-i svg{color:var(--w04)}
+.ey-t{font-family:var(--mono);font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--w08);margin-bottom:4px}
+.ey-s{font-size:11px;color:var(--w04);max-width:200px}
+
+.td{display:flex;align-items:flex-start;gap:11px;padding:13px 0;border-bottom:1px solid var(--w04);animation:up .25s ease;transition:opacity .25s,transform .25s}
+.td.out{opacity:0;transform:translateX(40px)}
+.ck{flex-shrink:0;width:20px;height:20px;margin-top:1px;border-radius:50%;border:1.5px solid var(--w15);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.ck:hover{border-color:var(--red);box-shadow:0 0 10px var(--rs)}
+.ck svg{opacity:0;transition:opacity .15s;color:var(--red)}.ck:hover svg{opacity:1}
+.td-b{flex:1;min-width:0}
+.td-t{font-size:14px;font-weight:400;line-height:1.5;color:var(--w70);word-wrap:break-word}
+.td-m{margin-top:2px;font-size:9px;color:var(--w04);font-family:var(--mono);letter-spacing:.5px}
+.td-a{flex-shrink:0}.td-a .ib{width:28px;height:28px}.td-a svg{width:12px;height:12px}
+.td.dn .td-t{text-decoration:line-through;color:var(--w08)}
+.td.dn .ck{border-color:var(--w04);background:var(--w04)}.td.dn .ck svg{opacity:.15}
+.td.dn .td-m .bg{color:var(--rd)}
+.cr{display:flex;justify-content:center;padding:12px 0 4px}
+.cr-b{padding:6px 16px;border:1px solid var(--w04);border-radius:var(--r);background:transparent;font-family:var(--mono);font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--w04);cursor:pointer;transition:all .2s}
+.cr-b:hover{border-color:var(--rd);color:var(--rd)}
+
+.fab{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);width:50px;height:50px;border-radius:50%;border:none;cursor:pointer;background:var(--red);color:var(--w);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(215,25,33,.3);transition:all .2s;z-index:100}
+.fab:hover{transform:translateX(-50%) scale(1.08);box-shadow:0 6px 24px rgba(215,25,33,.4)}
+.fab:active{transform:translateX(-50%) scale(.93)}
+.fab.h{transform:translateX(-50%) scale(0);opacity:0;pointer-events:none}
+
+.ov{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.88);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;align-items:flex-end;justify-content:center;opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s}
+.ov.o{opacity:1;visibility:visible}
+.mo{width:100%;max-width:540px;background:var(--sf);border:1px solid var(--w08);border-bottom:none;border-radius:14px 14px 0 0;padding:18px 20px calc(18px + var(--sb));transform:translateY(100%);transition:transform .32s cubic-bezier(.32,.72,0,1)}
+.ov.o .mo{transform:translateY(0)}
+@media(min-width:540px){.mo{border-radius:10px;border-bottom:1px solid var(--w08)}.ov{align-items:center}}
+.mo-bar{width:28px;height:3px;border-radius:2px;background:var(--w15);margin:0 auto 16px}
+.mo-l{font-family:var(--mono);font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--w30);margin-bottom:14px}
+.mo-in{width:100%;padding:11px 0;background:transparent;border:none;border-bottom:1px solid var(--w08);color:var(--w);font-size:15px;font-family:var(--sans);outline:none;transition:border-color .2s}
+.mo-in:focus{border-color:var(--red)}.mo-in::placeholder{color:var(--w08)}
+.chr{display:flex;gap:8px;margin-top:12px}
+.ch{flex:1;padding:9px;border:1px solid var(--w08);border-radius:var(--r);background:transparent;color:var(--w15);font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;text-align:center;cursor:pointer;transition:all .2s}
+.ch.on{border-color:var(--red);color:var(--w);background:var(--rs)}.ch:hover:not(.on){border-color:var(--w15)}
+.mo-a{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+.mb{padding:9px 18px;border:none;border-radius:var(--r);font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.mb.n{background:transparent;color:var(--w15)}.mb.n:hover{color:var(--w30)}
+.mb.y{background:var(--red);color:var(--w)}.mb.y:hover{background:#e52029}.mb.y:disabled{opacity:.2;cursor:not-allowed}
+
+.tt{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(14px);padding:9px 20px;border-radius:var(--r);background:var(--cd);border:1px solid var(--w08);font-size:12px;color:var(--w50);z-index:300;opacity:0;pointer-events:none;transition:all .3s;white-space:nowrap;max-width:88%}
+.tt.s{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.ip{position:fixed;bottom:0;left:0;right:0;padding:12px 20px calc(12px + var(--sb));background:var(--sf);border-top:1px solid var(--w08);display:flex;align-items:center;justify-content:space-between;z-index:90;transform:translateY(100%);transition:transform .3s}
+.ip.s{transform:translateY(0)}
+.ip-t{font-size:11px;color:var(--w15)}
+.ip-b{padding:6px 14px;border:1px solid var(--red);border-radius:var(--r);background:transparent;color:var(--red);cursor:pointer;font-family:var(--mono);font-size:8px;letter-spacing:2px;text-transform:uppercase;transition:all .2s}
+.ip-b:hover{background:var(--red);color:var(--w)}
+.ip-x{background:none;border:none;color:var(--w04);cursor:pointer;padding:6px;font-size:15px}
+</style>
+</head>
+<body>
+
+<div id="boot"><div class="boot-r"></div><div class="boot-t">Nothing</div></div>
+
+<div id="login" class="x">
+  <div class="l-dot"></div>
+  <div class="l-title">To-Do</div>
+  <div class="l-sub">Melde dich mit Google an. Deine Aufgaben werden automatisch in Google Drive gespeichert und auf allen Geräten synchronisiert.</div>
+  <button class="l-btn" id="loginBtn">
+    <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"/><path fill="#fff" opacity=".7" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#fff" opacity=".4" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18A10.96 10.96 0 0 0 1 12c0 1.77.42 3.45 1.18 4.93l3.66-2.84z"/><path fill="#fff" opacity=".2" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+    Mit Google anmelden
+  </button>
+  <button class="l-off" id="offBtn">Offline-Modus</button>
+</div>
+
+<div id="app">
+  <header class="hd">
+    <div class="hd-l"><div class="dot" id="dot"></div><span class="hd-t">To-Do</span></div>
+    <div class="hd-r">
+      <button class="ib" id="syncBtn" title="Synchronisieren"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M21.5 2v6h-6M2.5 22v-6h6"/><path d="M2.5 11.5a10 10 0 0 1 16.5-5.6L21.5 8M21.5 12.5a10 10 0 0 1-16.5 5.6L2.5 16"/></svg></button>
+      <button class="ib" id="outBtn" title="Abmelden"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
+    </div>
+  </header>
+  <div class="syncb" id="syncb">—</div>
+  <nav class="tabs">
+    <button class="tab on" data-t="private">Privat<span class="c" id="nP"></span></button>
+    <button class="tab" data-t="work">Arbeit<span class="c" id="nW"></span></button>
+    <button class="tab" data-t="done">Done<span class="c" id="nD"></span></button>
+  </nav>
+  <main class="ls" id="ls"></main>
+</div>
+
+<button class="fab h" id="fab"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+
+<div class="ov" id="ov">
+  <div class="mo">
+    <div class="mo-bar"></div>
+    <div class="mo-l">Neue Aufgabe</div>
+    <input class="mo-in" id="inp" type="text" placeholder="Was ist zu tun?" autocomplete="off" maxlength="200">
+    <div class="chr"><button class="ch on" data-c="private">Privat</button><button class="ch" data-c="work">Arbeit</button></div>
+    <div class="mo-a"><button class="mb n" id="mN">Abbrechen</button><button class="mb y" id="mY" disabled>Hinzufügen</button></div>
+  </div>
+</div>
+
+<div class="tt" id="tt"></div>
+
+<div class="ip" id="ip">
+  <span class="ip-t">Als App installieren</span>
+  <div style="display:flex;gap:6px;align-items:center">
+    <button class="ip-b" id="ipG">OK</button><button class="ip-x" id="ipX">×</button>
+  </div>
+</div>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+/*  NOTHING TO-DO — GOOGLE DRIVE AUTO-SYNC
+    ───────────────────────────────────────
+    Open → auto-load from Drive
+    Change → auto-save to Drive (debounced 1.5s)
+    Tab switch / phone unlock → re-sync
+    Token expired → silent re-auth
+    Offline → localStorage fallback             */
+
+const CID=document.querySelector('meta[name="google-client-id"]')?.content||'';
+const SCOPES='https://www.googleapis.com/auth/drive.file';
+const FN='nothing_todos.json';
+const LK='ntd_v3';
+const TK='ntd_token';
+const DB=1500;
+
+let S={todos:[],tab:'private',token:null,fid:null,online:false,saving:false};
+let st=null,tc=null;
+
+const $=id=>document.getElementById(id);
+const esc=s=>{const d=document.createElement('div');d.textContent=s;return d.innerHTML};
+const uid=()=>crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2,9);
+
+// ═══ BOOT ═══
+window.addEventListener('load',()=>{
+  loadL();
+  const t=localStorage.getItem(TK);
+  if(t){S.token=t;S.online=true;boot();driveLoad();}
+  else setTimeout(()=>{$('boot').classList.add('x');$('login').classList.remove('x');},400);
+});
+
+// ═══ AUTH ═══
+$('loginBtn').onclick=()=>{
+  if(!CID||CID.includes('DEINE_CLIENT_ID')){toast('⚠ Trage deine Google Client ID in index.html ein');return;}
+  mkTC(r=>{if(r.error){toast('Anmeldung fehlgeschlagen');return;}S.token=r.access_token;S.online=true;localStorage.setItem(TK,S.token);$('login').classList.add('x');boot();driveLoad();});
+  tc.requestAccessToken();
+};
+$('offBtn').onclick=()=>{S.online=false;$('login').classList.add('x');boot();setD('off');setSB('','Offline — Daten lokal');};
+$('outBtn').onclick=()=>{if(S.token)try{google.accounts.oauth2.revoke(S.token)}catch{};S.token=null;S.fid=null;S.online=false;localStorage.removeItem(TK);$('app').classList.remove('on');$('fab').classList.add('h');$('login').classList.remove('x');setD('');};
+$('syncBtn').onclick=()=>{if(S.online)driveLoad();else toast('Nicht verbunden');};
+
+function mkTC(cb){if(tc)return;tc=google.accounts.oauth2.initTokenClient({client_id:CID,scope:SCOPES,callback:cb});}
+async function reAuth(){return new Promise((ok,no)=>{mkTC(r=>{if(r.error){no(r.error);return;}S.token=r.access_token;localStorage.setItem(TK,S.token);ok();});tc.requestAccessToken({prompt:''});})}
+function aH(){return{'Authorization':'Bearer '+S.token};}
+
+// ═══ DRIVE ═══
+async function driveLoad(){
+  if(!S.token)return; setD('sync'); setSB('act','Synchronisiere...');$('syncBtn').classList.add('spin');
+  try{
+    let r=await gF(`https://www.googleapis.com/drive/v3/files?q=name='${FN}'+and+trashed=false&fields=files(id,modifiedTime)&spaces=drive`);
+    let d=await r.json();
+    if(d.files&&d.files.length>0){
+      S.fid=d.files[0].id;
+      let dl=await gF(`https://www.googleapis.com/drive/v3/files/${S.fid}?alt=media`);
+      let rm=await dl.json();
+      if(Array.isArray(rm)){S.todos=merge(rm,S.todos);saveL();render();await driveW();}
+    }else{await driveC();}
+    setD('ok');setSB('ok','Sync OK — '+tNow());
+  }catch(e){console.error(e);setD('err');setSB('','Sync fehlgeschlagen');toast('Sync-Fehler');}
+  finally{$('syncBtn').classList.remove('spin');}
+}
+
+async function driveW(){
+  if(!S.token||S.saving)return;S.saving=true;
+  try{if(S.fid)await gF(`https://www.googleapis.com/upload/drive/v3/files/${S.fid}?uploadType=media`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(S.todos)});
+  else await driveC();setD('ok');}
+  catch(e){console.error(e);setD('err');}
+  finally{S.saving=false;}
+}
+
+async function driveC(){
+  const m={name:FN,mimeType:'application/json'},f=new FormData();
+  f.append('metadata',new Blob([JSON.stringify(m)],{type:'application/json'}));
+  f.append('file',new Blob([JSON.stringify(S.todos)],{type:'application/json'}));
+  const r=await gF('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',{method:'POST',body:f});
+  S.fid=(await r.json()).id;
+}
+
+async function gF(url,o={}){
+  let h={...aH(),...(o.headers||{})};let r=await fetch(url,{...o,headers:h});
+  if(r.status===401){try{await reAuth();h={...aH(),...(o.headers||{})};r=await fetch(url,{...o,headers:h});}catch{S.token=null;S.online=false;localStorage.removeItem(TK);$('app').classList.remove('on');$('fab').classList.add('h');$('login').classList.remove('x');toast('Sitzung abgelaufen');throw new Error('Auth expired');}}
+  if(!r.ok)throw new Error('HTTP '+r.status);return r;
+}
+
+function autoS(){saveL();if(!S.online)return;clearTimeout(st);setD('sync');st=setTimeout(async()=>{await driveW();setSB('ok','Gespeichert — '+tNow());},DB);}
+
+function merge(a,b){const m=new Map();a.forEach(t=>m.set(t.id,t));b.forEach(t=>{const e=m.get(t.id);if(!e){m.set(t.id,t);return;}const eT=Math.max(e.completedAt||0,e.updatedAt||0,e.createdAt||0);const sT=Math.max(t.completedAt||0,t.updatedAt||0,t.createdAt||0);if(sT>eT)m.set(t.id,t);});return[...m.values()];}
+
+// ═══ LOCAL ═══
+function loadL(){try{S.todos=JSON.parse(localStorage.getItem(LK)||'[]');}catch{S.todos=[];}}
+function saveL(){try{localStorage.setItem(LK,JSON.stringify(S.todos));}catch{}}
+
+// ═══ RENDER ═══
+function boot(){$('boot').classList.add('x');$('app').classList.add('on');$('fab').classList.remove('h');render();ev();}
+function render(){list();cnt();$('fab').classList.toggle('h',S.tab==='done');}
+function cnt(){const p=S.todos.filter(t=>t.cat==='private'&&!t.done).length,w=S.todos.filter(t=>t.cat==='work'&&!t.done).length,d=S.todos.filter(t=>t.done).length;$('nP').textContent=p||'';$('nW').textContent=w||'';$('nD').textContent=d||'';}
+function filt(){if(S.tab==='done')return S.todos.filter(t=>t.done).sort((a,b)=>(b.completedAt||0)-(a.completedAt||0));return S.todos.filter(t=>t.cat===S.tab&&!t.done).sort((a,b)=>b.createdAt-a.createdAt);}
+
+function list(){
+  const el=$('ls'),its=filt();
+  if(!its.length){
+    const ic={private:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',work:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>',done:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'};
+    const tl={private:'Keine privaten Aufgaben',work:'Keine Arbeitsaufgaben',done:'Noch nichts erledigt'};
+    const su={private:'Tippe + um loszulegen',work:'Tippe + um loszulegen',done:'Erledigte Aufgaben landen hier'};
+    el.innerHTML=`<div class="ey"><div class="ey-i">${ic[S.tab]}</div><div class="ey-t">${tl[S.tab]}</div><div class="ey-s">${su[S.tab]}</div></div>`;return;
+  }
+  let h='';
+  if(S.tab==='done'&&its.length)h+=`<div class="cr"><button class="cr-b" id="clr">Alle erledigten löschen</button></div>`;
+  its.forEach(t=>{
+    const d=t.done,cl=t.cat==='private'?'Privat':'Arbeit',dt=fD(d?t.completedAt:t.createdAt);
+    h+=`<div class="td${d?' dn':''}" data-id="${t.id}">
+    ${d?`<button class="ck" data-a="re" data-id="${t.id}"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button>`
+    :`<button class="ck" data-a="do" data-id="${t.id}"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></button>`}
+    <div class="td-b"><div class="td-t">${esc(t.title)}</div><div class="td-m">${d?'<span class="bg">✓ '+cl+'</span>':cl} · ${dt}</div></div>
+    <div class="td-a"><button class="ib" data-a="rm" data-id="${t.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div></div>`;
+  });
+  el.innerHTML=h;
+  const cb=$('clr');if(cb)cb.onclick=()=>{if(!confirm('Alle erledigten Aufgaben löschen?'))return;S.todos=S.todos.filter(t=>!t.done);autoS();render();toast('Erledigt-Liste geleert');};
+}
+
+// ═══ OPS ═══
+function add(t,c){S.todos.push({id:uid(),title:t.trim(),cat:c,done:false,createdAt:Date.now(),updatedAt:Date.now(),completedAt:null});autoS();render();}
+function an(id,cb){const e=document.querySelector(`.td[data-id="${id}"]`);if(e){e.classList.add('out');setTimeout(cb,240);}else cb();}
+function comp(id){an(id,()=>{const t=S.todos.find(x=>x.id===id);if(t){t.done=true;t.completedAt=Date.now();t.updatedAt=Date.now();}autoS();render();toast('Erledigt ✓');});}
+function rest(id){an(id,()=>{const t=S.todos.find(x=>x.id===id);if(t){t.done=false;t.completedAt=null;t.updatedAt=Date.now();}autoS();render();toast('Wiederhergestellt');});}
+function rm(id){an(id,()=>{S.todos=S.todos.filter(x=>x.id!==id);autoS();render();});}
+
+// ═══ EVENTS ═══
+let _ev=false;
+function ev(){
+  if(_ev)return;_ev=true;
+  document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));t.classList.add('on');S.tab=t.dataset.t;render();});
+  $('fab').onclick=oM;$('mN').onclick=cM;$('ov').onclick=e=>{if(e.target===e.currentTarget)cM();};
+  const inp=$('inp');inp.oninput=()=>{$('mY').disabled=!inp.value.trim();};inp.onkeydown=e=>{if(e.key==='Enter'&&inp.value.trim())cfm();};$('mY').onclick=cfm;
+  document.querySelectorAll('.ch').forEach(c=>c.onclick=()=>{document.querySelectorAll('.ch').forEach(x=>x.classList.remove('on'));c.classList.add('on');});
+  $('ls').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const{a,id}=b.dataset;if(a==='do')comp(id);else if(a==='re')rest(id);else if(a==='rm')rm(id);});
+  document.addEventListener('keydown',e=>{if(e.key==='n'&&!e.ctrlKey&&!e.metaKey&&document.activeElement.tagName!=='INPUT'){e.preventDefault();oM();}if(e.key==='Escape')cM();});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.online)driveLoad();});
+  let dp=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;$('ip').classList.add('s');});
+  $('ipG').onclick=async()=>{if(dp){dp.prompt();await dp.userChoice;dp=null;}$('ip').classList.remove('s');};$('ipX').onclick=()=>$('ip').classList.remove('s');
+}
+function oM(){$('ov').classList.add('o');const c=S.tab==='done'?'private':S.tab;document.querySelectorAll('.ch').forEach(x=>x.classList.toggle('on',x.dataset.c===c));setTimeout(()=>$('inp').focus(),280);}
+function cM(){$('ov').classList.remove('o');$('inp').value='';$('mY').disabled=true;}
+function cfm(){const v=$('inp').value.trim(),c=document.querySelector('.ch.on')?.dataset.c||'private';if(!v)return;add(v,c);cM();S.tab=c;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.t===c));render();toast('Aufgabe hinzugefügt');}
+
+// ═══ UTIL ═══
+function fD(ts){if(!ts)return'';const d=new Date(ts),df=Date.now()-ts,m=Math.floor(df/6e4),h=Math.floor(df/36e5),dy=Math.floor(df/864e5);if(m<1)return'gerade eben';if(m<60)return`vor ${m} Min`;if(h<24)return`vor ${h} Std`;if(dy===1)return'Gestern';if(dy<7)return`vor ${dy} Tagen`;return d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'});}
+function tNow(){return new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});}
+function toast(m){const t=$('tt');t.textContent=m;t.classList.add('s');clearTimeout(t._);t._=setTimeout(()=>t.classList.remove('s'),2200);}
+function setD(s){$('dot').className='dot'+(s?' '+s:'');}
+function setSB(c,t){const b=$('syncb');b.className='syncb'+(c?' '+c:'');b.textContent=t;}
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
