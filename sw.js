@@ -20,6 +20,11 @@ self.addEventListener('activate', function(e) {
 
 self.addEventListener('fetch', function(e) {
   var url = e.request.url;
+
+  // Only handle http/https requests — skip extensions, data URIs, etc.
+  if (!url.startsWith('http')) return;
+
+  // Skip Google API calls
   if (url.includes('googleapis.com') || url.includes('accounts.google.com')) return;
 
   e.respondWith(
