@@ -5,18 +5,18 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="description" content="Nothing To-Do — Google Drive synced task manager">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="description" content="Nothing To-Do — Focus. Flow. Done.">
 <link rel="manifest" href="manifest.json">
 <title>Nothing To-Do</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
 
-<!-- ┌─────────────────────────────────────────────────┐
-     │  DEINE GOOGLE CLIENT ID HIER EINTRAGEN:         │
-     │  (Anleitung: siehe README.md)                    │
-     └─────────────────────────────────────────────────┘ -->
-<meta name="google-client-id" content="368244766898-da615t6bjr0q8lr0ujvqa362dd3c999q.apps.googleusercontent.com">
+<!-- ┌──────────────────────────────────────────┐
+     │  GOOGLE CLIENT ID HIER EINTRAGEN:        │
+     └──────────────────────────────────────────┘ -->
+<meta name="google-client-id" content="DEINE_CLIENT_ID_HIER.apps.googleusercontent.com">
 
 <style>
 :root{
@@ -31,12 +31,14 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;width:100%;background:var(--bg);color:var(--w);font-family:var(--sans);overflow:hidden;-webkit-font-smoothing:antialiased}
 
+/* BOOT */
 #boot{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s,visibility .5s}
 #boot.x{opacity:0;visibility:hidden;pointer-events:none}
 .boot-r{width:44px;height:44px;border:1.5px solid var(--w15);border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .boot-t{margin-top:22px;font-family:var(--mono);font-size:10px;letter-spacing:6px;text-transform:uppercase;color:var(--w30)}
 
+/* LOGIN */
 #login{position:fixed;inset:0;z-index:8000;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;transition:opacity .4s,visibility .4s}
 #login.x{opacity:0;visibility:hidden;pointer-events:none}
 .l-dot{width:12px;height:12px;border-radius:50%;background:var(--red);margin-bottom:28px;box-shadow:0 0 20px var(--rg)}
@@ -48,9 +50,11 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--w);font-family
 .l-off{margin-top:16px;background:none;border:1px solid var(--w08);color:var(--w15);padding:9px 24px;border-radius:var(--r);font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s}
 .l-off:hover{border-color:var(--w30);color:var(--w30)}
 
+/* APP */
 #app{display:none;flex-direction:column;height:100%;width:100%;max-width:540px;margin:0 auto;padding-top:var(--st);padding-bottom:var(--sb)}
 #app.on{display:flex}
 
+/* HEADER */
 .hd{flex-shrink:0;padding:14px 20px 0;display:flex;align-items:center;justify-content:space-between}
 .hd-l{display:flex;align-items:center;gap:10px}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--w15);transition:all .3s}
@@ -65,26 +69,31 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--w);font-family
 .ib:hover{color:var(--w70);background:var(--w04)}
 .ib.spin svg{animation:spin .7s linear infinite}
 
+/* SYNC BAR */
 .syncb{flex-shrink:0;height:24px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--w08);transition:color .3s}
 .syncb.act{color:var(--rd)}.syncb.ok{color:rgba(46,204,64,.3)}
 
+/* TABS */
 .tabs{flex-shrink:0;display:flex;padding:0 20px;border-bottom:1px solid var(--w04)}
-.tab{flex:1;padding:13px 0 11px;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;text-align:center;color:var(--w15);background:none;border:none;cursor:pointer;position:relative;transition:color .2s}
+.tab{flex:1;padding:13px 0 11px;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-align:center;color:var(--w15);background:none;border:none;cursor:pointer;position:relative;transition:color .2s}
 .tab:hover{color:var(--w30)}.tab.on{color:var(--w90)}
-.tab::after{content:'';position:absolute;bottom:-1px;left:20%;right:20%;height:1px;background:var(--red);transform:scaleX(0);transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.tab::after{content:'';position:absolute;bottom:-1px;left:15%;right:15%;height:1px;background:var(--red);transform:scaleX(0);transition:transform .3s cubic-bezier(.4,0,.2,1)}
 .tab.on::after{transform:scaleX(1)}
-.tab .c{display:inline-block;margin-left:4px;font-family:var(--sans);font-size:9px;font-weight:400;color:inherit;opacity:.3}
+.tab .c{display:inline-block;margin-left:3px;font-family:var(--sans);font-size:8px;font-weight:400;color:inherit;opacity:.3}
 
+/* LIST */
 .ls{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 20px 110px;-webkit-overflow-scrolling:touch}
 .ls::-webkit-scrollbar{width:2px}.ls::-webkit-scrollbar-thumb{background:var(--w04)}
 
+/* EMPTY */
 .ey{display:flex;flex-direction:column;align-items:center;justify-content:center;height:50vh;text-align:center;animation:up .4s ease}
 @keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .ey-i{width:52px;height:52px;border-radius:50%;border:1px dashed var(--w08);display:flex;align-items:center;justify-content:center;margin-bottom:14px}
 .ey-i svg{color:var(--w04)}
 .ey-t{font-family:var(--mono);font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--w08);margin-bottom:4px}
-.ey-s{font-size:11px;color:var(--w04);max-width:200px}
+.ey-s{font-size:11px;color:var(--w04);max-width:220px}
 
+/* TODO ITEM */
 .td{display:flex;align-items:flex-start;gap:11px;padding:13px 0;border-bottom:1px solid var(--w04);animation:up .25s ease;transition:opacity .25s,transform .25s}
 .td.out{opacity:0;transform:translateX(40px)}
 .ck{flex-shrink:0;width:20px;height:20px;margin-top:1px;border-radius:50%;border:1.5px solid var(--w15);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
@@ -93,7 +102,12 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--w);font-family
 .td-b{flex:1;min-width:0}
 .td-t{font-size:14px;font-weight:400;line-height:1.5;color:var(--w70);word-wrap:break-word}
 .td-m{margin-top:2px;font-size:9px;color:var(--w04);font-family:var(--mono);letter-spacing:.5px}
-.td-a{flex-shrink:0}.td-a .ib{width:28px;height:28px}.td-a svg{width:12px;height:12px}
+.td-a{flex-shrink:0;display:flex;gap:0}.td-a .ib{width:28px;height:28px}.td-a svg{width:12px;height:12px}
+
+/* Focus icon on todo items */
+.td-a .ib.foc{color:var(--rd)}
+.td-a .ib.foc.active{color:var(--red)}
+
 .td.dn .td-t{text-decoration:line-through;color:var(--w08)}
 .td.dn .ck{border-color:var(--w04);background:var(--w04)}.td.dn .ck svg{opacity:.15}
 .td.dn .td-m .bg{color:var(--rd)}
@@ -101,11 +115,42 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--w);font-family
 .cr-b{padding:6px 16px;border:1px solid var(--w04);border-radius:var(--r);background:transparent;font-family:var(--mono);font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--w04);cursor:pointer;transition:all .2s}
 .cr-b:hover{border-color:var(--rd);color:var(--rd)}
 
+/* ═══ POMODORO TIMER ═══ */
+.pomo{display:flex;flex-direction:column;align-items:center;padding:24px 0 20px;border-bottom:1px solid var(--w04);animation:up .4s ease}
+.pomo-ring{position:relative;width:160px;height:160px;margin-bottom:16px}
+.pomo-svg{width:160px;height:160px;transform:rotate(-90deg)}
+.pomo-bg{fill:none;stroke:var(--w04);stroke-width:2}
+.pomo-prog{fill:none;stroke:var(--red);stroke-width:2;stroke-linecap:round;transition:stroke-dashoffset .5s linear}
+.pomo-time{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.pomo-digits{font-family:var(--mono);font-size:36px;font-weight:700;letter-spacing:2px;color:var(--w90)}
+.pomo-label{font-family:var(--mono);font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--w15);margin-top:4px}
+.pomo-ctrl{display:flex;gap:12px;align-items:center}
+.pomo-btn{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--w15);background:transparent;color:var(--w50);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s}
+.pomo-btn:hover{border-color:var(--w30);color:var(--w)}
+.pomo-btn.primary{border-color:var(--red);color:var(--w);background:var(--rs)}
+.pomo-btn.primary:hover{background:var(--red)}
+.pomo-btn.primary.running{border-color:var(--w30);background:var(--w04);color:var(--w50)}
+.pomo-btn.primary.running:hover{border-color:var(--w50)}
+.pomo-count{display:flex;gap:6px;margin-top:14px;align-items:center}
+.pomo-dot-done{width:6px;height:6px;border-radius:50%;background:var(--red)}
+.pomo-dot-pending{width:6px;height:6px;border-radius:50%;border:1px solid var(--w15)}
+.pomo-info{font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--w08);text-transform:uppercase;margin-left:8px}
+
+/* Focus task in focus view */
+.fk-task{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--w04)}
+.fk-task .ck{width:18px;height:18px}
+.fk-task .fk-title{flex:1;font-size:13px;color:var(--w50)}
+.fk-task .fk-cat{font-family:var(--mono);font-size:8px;letter-spacing:1px;color:var(--w08);text-transform:uppercase}
+.fk-task.current .fk-title{color:var(--w90)}
+.fk-task.current{border-left:2px solid var(--red);padding-left:10px;margin-left:-2px}
+
+/* FAB */
 .fab{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);width:50px;height:50px;border-radius:50%;border:none;cursor:pointer;background:var(--red);color:var(--w);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(215,25,33,.3);transition:all .2s;z-index:100}
 .fab:hover{transform:translateX(-50%) scale(1.08);box-shadow:0 6px 24px rgba(215,25,33,.4)}
 .fab:active{transform:translateX(-50%) scale(.93)}
 .fab.h{transform:translateX(-50%) scale(0);opacity:0;pointer-events:none}
 
+/* MODAL */
 .ov{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.88);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;align-items:flex-end;justify-content:center;opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s}
 .ov.o{opacity:1;visibility:visible}
 .mo{width:100%;max-width:540px;background:var(--sf);border:1px solid var(--w08);border-bottom:none;border-radius:14px 14px 0 0;padding:18px 20px calc(18px + var(--sb));transform:translateY(100%);transition:transform .32s cubic-bezier(.32,.72,0,1)}
@@ -123,9 +168,11 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--w);font-family
 .mb.n{background:transparent;color:var(--w15)}.mb.n:hover{color:var(--w30)}
 .mb.y{background:var(--red);color:var(--w)}.mb.y:hover{background:#e52029}.mb.y:disabled{opacity:.2;cursor:not-allowed}
 
+/* TOAST */
 .tt{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(14px);padding:9px 20px;border-radius:var(--r);background:var(--cd);border:1px solid var(--w08);font-size:12px;color:var(--w50);z-index:300;opacity:0;pointer-events:none;transition:all .3s;white-space:nowrap;max-width:88%}
 .tt.s{opacity:1;transform:translateX(-50%) translateY(0)}
 
+/* INSTALL */
 .ip{position:fixed;bottom:0;left:0;right:0;padding:12px 20px calc(12px + var(--sb));background:var(--sf);border-top:1px solid var(--w08);display:flex;align-items:center;justify-content:space-between;z-index:90;transform:translateY(100%);transition:transform .3s}
 .ip.s{transform:translateY(0)}
 .ip-t{font-size:11px;color:var(--w15)}
@@ -161,6 +208,7 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--w);font-family
   <nav class="tabs">
     <button class="tab on" data-t="private">Privat<span class="c" id="nP"></span></button>
     <button class="tab" data-t="work">Arbeit<span class="c" id="nW"></span></button>
+    <button class="tab" data-t="focus">Fokus<span class="c" id="nF"></span></button>
     <button class="tab" data-t="done">Done<span class="c" id="nD"></span></button>
   </nav>
   <main class="ls" id="ls"></main>
@@ -189,27 +237,40 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--w);font-family
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script>
-/*  NOTHING TO-DO — GOOGLE DRIVE AUTO-SYNC
-    ───────────────────────────────────────
-    Open → auto-load from Drive
-    Change → auto-save to Drive (debounced 1.5s)
-    Tab switch / phone unlock → re-sync
-    Token expired → silent re-auth
-    Offline → localStorage fallback             */
-
 const CID=document.querySelector('meta[name="google-client-id"]')?.content||'';
 const SCOPES='https://www.googleapis.com/auth/drive.file';
 const FN='nothing_todos.json';
-const LK='ntd_v3';
+const LK='ntd_v4';
 const TK='ntd_token';
 const DB=1500;
 
+// Pomodoro settings (seconds)
+const POMO_WORK=25*60;
+const POMO_SHORT=5*60;
+const POMO_LONG=15*60;
+const POMO_ROUNDS=4;
+
 let S={todos:[],tab:'private',token:null,fid:null,online:false,saving:false};
+// Pomodoro state
+let P={running:false,paused:false,seconds:POMO_WORK,total:POMO_WORK,round:1,isBreak:false,interval:null};
+
 let st=null,tc=null;
 
 const $=id=>document.getElementById(id);
 const esc=s=>{const d=document.createElement('div');d.textContent=s;return d.innerHTML};
 const uid=()=>crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2,9);
+
+// SVG Icons
+const IC={
+  focus:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
+  check:'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  restore:'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>',
+  trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
+  play:'<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21"/></svg>',
+  pause:'<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="3" width="4" height="18" rx="1"/><rect x="15" y="3" width="4" height="18" rx="1"/></svg>',
+  reset:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>',
+  skip:'<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 15,12 5,21"/><rect x="16" y="3" width="3" height="18" rx="1"/></svg>',
+};
 
 // ═══ BOOT ═══
 window.addEventListener('load',()=>{
@@ -221,7 +282,7 @@ window.addEventListener('load',()=>{
 
 // ═══ AUTH ═══
 $('loginBtn').onclick=()=>{
-  if(!CID||CID.includes('DEINE_CLIENT_ID')){toast('⚠ Trage deine Google Client ID in index.html ein');return;}
+  if(!CID||CID.includes('DEINE_CLIENT_ID')){toast('⚠ Client ID in index.html eintragen');return;}
   mkTC(r=>{if(r.error){toast('Anmeldung fehlgeschlagen');return;}S.token=r.access_token;S.online=true;localStorage.setItem(TK,S.token);$('login').classList.add('x');boot();driveLoad();});
   tc.requestAccessToken();
 };
@@ -235,29 +296,21 @@ function aH(){return{'Authorization':'Bearer '+S.token};}
 
 // ═══ DRIVE ═══
 async function driveLoad(){
-  if(!S.token)return; setD('sync'); setSB('act','Synchronisiere...');$('syncBtn').classList.add('spin');
+  if(!S.token)return;setD('sync');setSB('act','Synchronisiere...');$('syncBtn').classList.add('spin');
   try{
     let r=await gF(`https://www.googleapis.com/drive/v3/files?q=name='${FN}'+and+trashed=false&fields=files(id,modifiedTime)&spaces=drive`);
     let d=await r.json();
-    if(d.files&&d.files.length>0){
-      S.fid=d.files[0].id;
-      let dl=await gF(`https://www.googleapis.com/drive/v3/files/${S.fid}?alt=media`);
-      let rm=await dl.json();
-      if(Array.isArray(rm)){S.todos=merge(rm,S.todos);saveL();render();await driveW();}
-    }else{await driveC();}
+    if(d.files&&d.files.length>0){S.fid=d.files[0].id;let dl=await gF(`https://www.googleapis.com/drive/v3/files/${S.fid}?alt=media`);let rm=await dl.json();if(Array.isArray(rm)){S.todos=merge(rm,S.todos);saveL();render();await driveW();}}
+    else{await driveC();}
     setD('ok');setSB('ok','Sync OK — '+tNow());
   }catch(e){console.error(e);setD('err');setSB('','Sync fehlgeschlagen');toast('Sync-Fehler');}
   finally{$('syncBtn').classList.remove('spin');}
 }
-
 async function driveW(){
   if(!S.token||S.saving)return;S.saving=true;
-  try{if(S.fid)await gF(`https://www.googleapis.com/upload/drive/v3/files/${S.fid}?uploadType=media`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(S.todos)});
-  else await driveC();setD('ok');}
-  catch(e){console.error(e);setD('err');}
-  finally{S.saving=false;}
+  try{if(S.fid)await gF(`https://www.googleapis.com/upload/drive/v3/files/${S.fid}?uploadType=media`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(S.todos)});else await driveC();setD('ok');}
+  catch(e){console.error(e);setD('err');}finally{S.saving=false;}
 }
-
 async function driveC(){
   const m={name:FN,mimeType:'application/json'},f=new FormData();
   f.append('metadata',new Blob([JSON.stringify(m)],{type:'application/json'}));
@@ -265,15 +318,12 @@ async function driveC(){
   const r=await gF('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',{method:'POST',body:f});
   S.fid=(await r.json()).id;
 }
-
 async function gF(url,o={}){
   let h={...aH(),...(o.headers||{})};let r=await fetch(url,{...o,headers:h});
   if(r.status===401){try{await reAuth();h={...aH(),...(o.headers||{})};r=await fetch(url,{...o,headers:h});}catch{S.token=null;S.online=false;localStorage.removeItem(TK);$('app').classList.remove('on');$('fab').classList.add('h');$('login').classList.remove('x');toast('Sitzung abgelaufen');throw new Error('Auth expired');}}
   if(!r.ok)throw new Error('HTTP '+r.status);return r;
 }
-
 function autoS(){saveL();if(!S.online)return;clearTimeout(st);setD('sync');st=setTimeout(async()=>{await driveW();setSB('ok','Gespeichert — '+tNow());},DB);}
-
 function merge(a,b){const m=new Map();a.forEach(t=>m.set(t.id,t));b.forEach(t=>{const e=m.get(t.id);if(!e){m.set(t.id,t);return;}const eT=Math.max(e.completedAt||0,e.updatedAt||0,e.createdAt||0);const sT=Math.max(t.completedAt||0,t.updatedAt||0,t.createdAt||0);if(sT>eT)m.set(t.id,t);});return[...m.values()];}
 
 // ═══ LOCAL ═══
@@ -282,59 +332,229 @@ function saveL(){try{localStorage.setItem(LK,JSON.stringify(S.todos));}catch{}}
 
 // ═══ RENDER ═══
 function boot(){$('boot').classList.add('x');$('app').classList.add('on');$('fab').classList.remove('h');render();ev();}
-function render(){list();cnt();$('fab').classList.toggle('h',S.tab==='done');}
-function cnt(){const p=S.todos.filter(t=>t.cat==='private'&&!t.done).length,w=S.todos.filter(t=>t.cat==='work'&&!t.done).length,d=S.todos.filter(t=>t.done).length;$('nP').textContent=p||'';$('nW').textContent=w||'';$('nD').textContent=d||'';}
-function filt(){if(S.tab==='done')return S.todos.filter(t=>t.done).sort((a,b)=>(b.completedAt||0)-(a.completedAt||0));return S.todos.filter(t=>t.cat===S.tab&&!t.done).sort((a,b)=>b.createdAt-a.createdAt);}
+function render(){list();cnt();$('fab').classList.toggle('h',S.tab==='done'||S.tab==='focus');}
+
+function cnt(){
+  const p=S.todos.filter(t=>t.cat==='private'&&!t.done).length;
+  const w=S.todos.filter(t=>t.cat==='work'&&!t.done).length;
+  const f=S.todos.filter(t=>t.focus&&!t.done).length;
+  const d=S.todos.filter(t=>t.done).length;
+  $('nP').textContent=p||'';$('nW').textContent=w||'';$('nF').textContent=f||'';$('nD').textContent=d||'';
+}
+
+function filt(){
+  if(S.tab==='done')return S.todos.filter(t=>t.done).sort((a,b)=>(b.completedAt||0)-(a.completedAt||0));
+  if(S.tab==='focus')return S.todos.filter(t=>t.focus&&!t.done).sort((a,b)=>b.createdAt-a.createdAt);
+  return S.todos.filter(t=>t.cat===S.tab&&!t.done).sort((a,b)=>b.createdAt-a.createdAt);
+}
 
 function list(){
   const el=$('ls'),its=filt();
+
+  // FOCUS VIEW — Pomodoro + focused tasks
+  if(S.tab==='focus'){
+    let h=renderPomo();
+    if(!its.length){
+      h+=`<div class="ey" style="height:30vh"><div class="ey-i"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div><div class="ey-t">Kein Fokus gesetzt</div><div class="ey-s">Setze Aufgaben in den Fokus über das ◎ Icon in Privat oder Arbeit</div></div>`;
+    } else {
+      its.forEach(t=>{
+        const cl=t.cat==='private'?'Privat':'Arbeit';
+        h+=`<div class="fk-task" data-id="${t.id}">
+          <button class="ck" data-a="do" data-id="${t.id}">${IC.check}</button>
+          <span class="fk-title">${esc(t.title)}</span>
+          <span class="fk-cat">${cl}</span>
+          <button class="ib foc active" data-a="unfocus" data-id="${t.id}" title="Aus Fokus entfernen">${IC.focus}</button>
+        </div>`;
+      });
+    }
+    el.innerHTML=h;
+    bindPomo();
+    return;
+  }
+
+  // NORMAL + DONE VIEWS
   if(!its.length){
     const ic={private:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',work:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>',done:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'};
     const tl={private:'Keine privaten Aufgaben',work:'Keine Arbeitsaufgaben',done:'Noch nichts erledigt'};
     const su={private:'Tippe + um loszulegen',work:'Tippe + um loszulegen',done:'Erledigte Aufgaben landen hier'};
     el.innerHTML=`<div class="ey"><div class="ey-i">${ic[S.tab]}</div><div class="ey-t">${tl[S.tab]}</div><div class="ey-s">${su[S.tab]}</div></div>`;return;
   }
+
   let h='';
   if(S.tab==='done'&&its.length)h+=`<div class="cr"><button class="cr-b" id="clr">Alle erledigten löschen</button></div>`;
+
   its.forEach(t=>{
     const d=t.done,cl=t.cat==='private'?'Privat':'Arbeit',dt=fD(d?t.completedAt:t.createdAt);
+    const isFocused=t.focus&&!d;
     h+=`<div class="td${d?' dn':''}" data-id="${t.id}">
-    ${d?`<button class="ck" data-a="re" data-id="${t.id}"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button>`
-    :`<button class="ck" data-a="do" data-id="${t.id}"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></button>`}
+    ${d?`<button class="ck" data-a="re" data-id="${t.id}">${IC.restore}</button>`
+      :`<button class="ck" data-a="do" data-id="${t.id}">${IC.check}</button>`}
     <div class="td-b"><div class="td-t">${esc(t.title)}</div><div class="td-m">${d?'<span class="bg">✓ '+cl+'</span>':cl} · ${dt}</div></div>
-    <div class="td-a"><button class="ib" data-a="rm" data-id="${t.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div></div>`;
+    <div class="td-a">
+      ${!d?`<button class="ib foc${isFocused?' active':''}" data-a="${isFocused?'unfocus':'focus'}" data-id="${t.id}" title="${isFocused?'Aus Fokus entfernen':'In Fokus setzen'}">${IC.focus}</button>`:''}
+      <button class="ib" data-a="rm" data-id="${t.id}">${IC.trash}</button>
+    </div></div>`;
   });
   el.innerHTML=h;
   const cb=$('clr');if(cb)cb.onclick=()=>{if(!confirm('Alle erledigten Aufgaben löschen?'))return;S.todos=S.todos.filter(t=>!t.done);autoS();render();toast('Erledigt-Liste geleert');};
 }
 
-// ═══ OPS ═══
-function add(t,c){S.todos.push({id:uid(),title:t.trim(),cat:c,done:false,createdAt:Date.now(),updatedAt:Date.now(),completedAt:null});autoS();render();}
-function an(id,cb){const e=document.querySelector(`.td[data-id="${id}"]`);if(e){e.classList.add('out');setTimeout(cb,240);}else cb();}
-function comp(id){an(id,()=>{const t=S.todos.find(x=>x.id===id);if(t){t.done=true;t.completedAt=Date.now();t.updatedAt=Date.now();}autoS();render();toast('Erledigt ✓');});}
+// ═══ POMODORO ═══
+function renderPomo(){
+  const circ=2*Math.PI*72; // radius 72
+  const prog=P.seconds/P.total;
+  const offset=circ*(1-prog);
+  const min=Math.floor(P.seconds/60);
+  const sec=P.seconds%60;
+  const timeStr=String(min).padStart(2,'0')+':'+String(sec).padStart(2,'0');
+  const label=P.isBreak?(P.round>POMO_ROUNDS?'Lange Pause':'Kurze Pause'):'Fokuszeit';
+
+  let dots='';
+  for(let i=1;i<=POMO_ROUNDS;i++){
+    dots+=i<P.round?`<div class="pomo-dot-done"></div>`:`<div class="pomo-dot-pending"></div>`;
+  }
+
+  return `<div class="pomo">
+    <div class="pomo-ring">
+      <svg class="pomo-svg" viewBox="0 0 160 160">
+        <circle class="pomo-bg" cx="80" cy="80" r="72"/>
+        <circle class="pomo-prog" cx="80" cy="80" r="72" stroke-dasharray="${circ}" stroke-dashoffset="${offset}"/>
+      </svg>
+      <div class="pomo-time">
+        <div class="pomo-digits">${timeStr}</div>
+        <div class="pomo-label">${label}</div>
+      </div>
+    </div>
+    <div class="pomo-ctrl">
+      <button class="pomo-btn" id="pomoReset" title="Zurücksetzen">${IC.reset}</button>
+      <button class="pomo-btn primary${P.running?' running':''}" id="pomoToggle">${P.running?IC.pause:IC.play}</button>
+      <button class="pomo-btn" id="pomoSkip" title="Überspringen">${IC.skip}</button>
+    </div>
+    <div class="pomo-count">${dots}<span class="pomo-info">Runde ${Math.min(P.round,POMO_ROUNDS)}/${POMO_ROUNDS}</span></div>
+  </div>`;
+}
+
+function bindPomo(){
+  const tog=$('pomoToggle'),res=$('pomoReset'),skip=$('pomoSkip');
+  if(!tog)return;
+  tog.onclick=()=>{
+    if(P.running){pomoPause();}else{pomoStart();}
+    render();
+  };
+  res.onclick=()=>{pomoReset();render();};
+  skip.onclick=()=>{pomoSkip();render();};
+}
+
+function pomoStart(){
+  P.running=true;P.paused=false;
+  clearInterval(P.interval);
+  P.interval=setInterval(()=>{
+    P.seconds--;
+    if(P.seconds<=0){pomoNext();}
+    if(S.tab==='focus')render();
+  },1000);
+}
+
+function pomoPause(){P.running=false;P.paused=true;clearInterval(P.interval);}
+
+function pomoReset(){
+  clearInterval(P.interval);
+  P.running=false;P.paused=false;P.isBreak=false;P.round=1;
+  P.seconds=POMO_WORK;P.total=POMO_WORK;
+}
+
+function pomoSkip(){
+  clearInterval(P.interval);P.running=false;
+  pomoNext();
+}
+
+function pomoNext(){
+  clearInterval(P.interval);P.running=false;
+  if(P.isBreak){
+    // Break ended → next work round
+    P.isBreak=false;P.seconds=POMO_WORK;P.total=POMO_WORK;
+    toast('Pause vorbei — weiter geht\'s!');
+    tryNotify('Pause vorbei','Weiter geht\'s! 💪');
+  } else {
+    // Work ended → break
+    P.round++;
+    P.isBreak=true;
+    if(P.round>POMO_ROUNDS){
+      P.seconds=POMO_LONG;P.total=POMO_LONG;
+      toast('Lange Pause — gut gemacht!');
+      tryNotify('Runde komplett!','Zeit für eine lange Pause 🎉');
+      P.round=1; // reset after long break
+    } else {
+      P.seconds=POMO_SHORT;P.total=POMO_SHORT;
+      toast('Kurze Pause');
+      tryNotify('Fokuszeit vorbei','Kurze Pause einlegen ☕');
+    }
+  }
+  if(S.tab==='focus')render();
+}
+
+function tryNotify(title,body){
+  if('Notification' in window&&Notification.permission==='granted'){
+    new Notification(title,{body,icon:'icon-192.png',badge:'icon-192.png'});
+  }
+}
+
+// ═══ TODO OPS ═══
+function add(t,c){S.todos.push({id:uid(),title:t.trim(),cat:c,done:false,focus:false,createdAt:Date.now(),updatedAt:Date.now(),completedAt:null});autoS();render();}
+function an(id,cb){const e=document.querySelector(`[data-id="${id}"]`);if(e&&e.classList.contains('td')){e.classList.add('out');setTimeout(cb,240);}else cb();}
+function comp(id){an(id,()=>{const t=S.todos.find(x=>x.id===id);if(t){t.done=true;t.focus=false;t.completedAt=Date.now();t.updatedAt=Date.now();}autoS();render();toast('Erledigt ✓');});}
 function rest(id){an(id,()=>{const t=S.todos.find(x=>x.id===id);if(t){t.done=false;t.completedAt=null;t.updatedAt=Date.now();}autoS();render();toast('Wiederhergestellt');});}
 function rm(id){an(id,()=>{S.todos=S.todos.filter(x=>x.id!==id);autoS();render();});}
+function toggleFocus(id){const t=S.todos.find(x=>x.id===id);if(t){t.focus=!t.focus;t.updatedAt=Date.now();autoS();render();toast(t.focus?'Im Fokus ◎':'Fokus entfernt');}}
 
 // ═══ EVENTS ═══
 let _ev=false;
 function ev(){
   if(_ev)return;_ev=true;
-  document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));t.classList.add('on');S.tab=t.dataset.t;render();});
+
+  document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+    t.classList.add('on');S.tab=t.dataset.t;render();
+  });
+
   $('fab').onclick=oM;$('mN').onclick=cM;$('ov').onclick=e=>{if(e.target===e.currentTarget)cM();};
-  const inp=$('inp');inp.oninput=()=>{$('mY').disabled=!inp.value.trim();};inp.onkeydown=e=>{if(e.key==='Enter'&&inp.value.trim())cfm();};$('mY').onclick=cfm;
+  const inp=$('inp');
+  inp.oninput=()=>{$('mY').disabled=!inp.value.trim();};
+  inp.onkeydown=e=>{if(e.key==='Enter'&&inp.value.trim())cfm();};
+  $('mY').onclick=cfm;
   document.querySelectorAll('.ch').forEach(c=>c.onclick=()=>{document.querySelectorAll('.ch').forEach(x=>x.classList.remove('on'));c.classList.add('on');});
-  $('ls').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const{a,id}=b.dataset;if(a==='do')comp(id);else if(a==='re')rest(id);else if(a==='rm')rm(id);});
-  document.addEventListener('keydown',e=>{if(e.key==='n'&&!e.ctrlKey&&!e.metaKey&&document.activeElement.tagName!=='INPUT'){e.preventDefault();oM();}if(e.key==='Escape')cM();});
+
+  $('ls').addEventListener('click',e=>{
+    const b=e.target.closest('[data-a]');if(!b)return;
+    const{a,id}=b.dataset;
+    if(a==='do')comp(id);else if(a==='re')rest(id);else if(a==='rm')rm(id);
+    else if(a==='focus'||a==='unfocus')toggleFocus(id);
+  });
+
+  document.addEventListener('keydown',e=>{
+    if(e.key==='n'&&!e.ctrlKey&&!e.metaKey&&document.activeElement.tagName!=='INPUT'){e.preventDefault();oM();}
+    if(e.key==='Escape')cM();
+    if(e.key===' '&&S.tab==='focus'&&document.activeElement.tagName!=='INPUT'){e.preventDefault();if(P.running)pomoPause();else pomoStart();render();}
+  });
+
   document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.online)driveLoad();});
+
+  // Request notification permission on focus tab
+  if('Notification' in window&&Notification.permission==='default'){
+    Notification.requestPermission();
+  }
+
   let dp=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;$('ip').classList.add('s');});
-  $('ipG').onclick=async()=>{if(dp){dp.prompt();await dp.userChoice;dp=null;}$('ip').classList.remove('s');};$('ipX').onclick=()=>$('ip').classList.remove('s');
+  $('ipG').onclick=async()=>{if(dp){dp.prompt();await dp.userChoice;dp=null;}$('ip').classList.remove('s');};
+  $('ipX').onclick=()=>$('ip').classList.remove('s');
 }
-function oM(){$('ov').classList.add('o');const c=S.tab==='done'?'private':S.tab;document.querySelectorAll('.ch').forEach(x=>x.classList.toggle('on',x.dataset.c===c));setTimeout(()=>$('inp').focus(),280);}
+
+function oM(){$('ov').classList.add('o');const c=S.tab==='done'||S.tab==='focus'?'private':S.tab;document.querySelectorAll('.ch').forEach(x=>x.classList.toggle('on',x.dataset.c===c));setTimeout(()=>$('inp').focus(),280);}
 function cM(){$('ov').classList.remove('o');$('inp').value='';$('mY').disabled=true;}
 function cfm(){const v=$('inp').value.trim(),c=document.querySelector('.ch.on')?.dataset.c||'private';if(!v)return;add(v,c);cM();S.tab=c;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.t===c));render();toast('Aufgabe hinzugefügt');}
 
 // ═══ UTIL ═══
-function fD(ts){if(!ts)return'';const d=new Date(ts),df=Date.now()-ts,m=Math.floor(df/6e4),h=Math.floor(df/36e5),dy=Math.floor(df/864e5);if(m<1)return'gerade eben';if(m<60)return`vor ${m} Min`;if(h<24)return`vor ${h} Std`;if(dy===1)return'Gestern';if(dy<7)return`vor ${dy} Tagen`;return d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'});}
+function fD(ts){if(!ts)return'';const df=Date.now()-ts,m=Math.floor(df/6e4),h=Math.floor(df/36e5),dy=Math.floor(df/864e5);if(m<1)return'gerade eben';if(m<60)return`vor ${m} Min`;if(h<24)return`vor ${h} Std`;if(dy===1)return'Gestern';if(dy<7)return`vor ${dy} Tagen`;return new Date(ts).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'});}
 function tNow(){return new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});}
 function toast(m){const t=$('tt');t.textContent=m;t.classList.add('s');clearTimeout(t._);t._=setTimeout(()=>t.classList.remove('s'),2200);}
 function setD(s){$('dot').className='dot'+(s?' '+s:'');}
