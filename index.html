@@ -120,7 +120,7 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--w);font-family
 .pomo-ring{position:relative;width:160px;height:160px;margin-bottom:16px}
 .pomo-svg{width:160px;height:160px;transform:rotate(-90deg)}
 .pomo-bg{fill:none;stroke:var(--w04);stroke-width:2}
-.pomo-prog{fill:none;stroke:var(--red);stroke-width:2;stroke-linecap:round;transition:stroke-dashoffset .5s linear}
+.pomo-prog{fill:none;stroke:var(--red);stroke-width:2;stroke-linecap:round;transition:stroke-dashoffset 1s linear}
 .pomo-time{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .pomo-digits{font-family:var(--mono);font-size:36px;font-weight:700;letter-spacing:2px;color:var(--w90)}
 .pomo-label{font-family:var(--mono);font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--w15);margin-top:4px}
@@ -450,9 +450,24 @@ function pomoStart(){
   clearInterval(P.interval);
   P.interval=setInterval(()=>{
     P.seconds--;
-    if(P.seconds<=0){pomoNext();}
-    if(S.tab==='focus')render();
+    if(P.seconds<=0){pomoNext();return;}
+    if(S.tab==='focus')pomoTick();
   },1000);
+}
+
+function pomoTick(){
+  // Update only timer digits, ring progress, and label — no DOM rebuild
+  const digits=document.querySelector('.pomo-digits');
+  const prog=document.querySelector('.pomo-prog');
+  const label=document.querySelector('.pomo-label');
+  if(!digits||!prog)return;
+  const min=Math.floor(P.seconds/60);
+  const sec=P.seconds%60;
+  digits.textContent=String(min).padStart(2,'0')+':'+String(sec).padStart(2,'0');
+  const circ=2*Math.PI*72;
+  const offset=circ*(1-(P.seconds/P.total));
+  prog.style.strokeDashoffset=offset;
+  if(label)label.textContent=P.isBreak?(P.round>POMO_ROUNDS?'Lange Pause':'Kurze Pause'):'Fokuszeit';
 }
 
 function pomoPause(){P.running=false;P.paused=true;clearInterval(P.interval);}
