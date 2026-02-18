@@ -12,1629 +12,639 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
 <script src="https://accounts.google.com/gsi/client" async></script>
 <style>
-/* ═══════════════════════════════════════
-   DESIGN TOKENS — Nothing OS
-═══════════════════════════════════════ */
 :root {
-  --bg:     #000;
-  --sf:     #080808;
-  --cd:     #0e0e0e;
-  --brd:    #171717;
-  --brd2:   #222;
-  --red:    #D71921;
-  --rs:     rgba(215,25,33,.10);
-  --rg:     rgba(215,25,33,.22);
-  --w:      #fff;
-  --w80:    rgba(255,255,255,.80);
-  --w50:    rgba(255,255,255,.50);
-  --w30:    rgba(255,255,255,.30);
-  --w15:    rgba(255,255,255,.15);
-  --w08:    rgba(255,255,255,.08);
-  --w04:    rgba(255,255,255,.04);
-  --mono:   'Space Mono', monospace;
-  --sans:   'DM Sans', -apple-system, sans-serif;
-  --st:     env(safe-area-inset-top, 0px);
-  --sb:     env(safe-area-inset-bottom, 0px);
-  --sl:     env(safe-area-inset-left, 0px);
-  --sr:     env(safe-area-inset-right, 0px);
+  --bg:  #000;
+  --s1:  #0a0a0a;
+  --s2:  #111;
+  --b1:  #1a1a1a;
+  --b2:  #242424;
+  --red: #D71921;
+  --rs:  rgba(215,25,33,.08);
+  --w:   #fff;
+  --w70: rgba(255,255,255,.70);
+  --w40: rgba(255,255,255,.40);
+  --w20: rgba(255,255,255,.20);
+  --w10: rgba(255,255,255,.10);
+  --w05: rgba(255,255,255,.05);
+  --mono:'Space Mono',monospace;
+  --sans:'DM Sans',-apple-system,sans-serif;
+  --sat: env(safe-area-inset-top,0px);
+  --sab: env(safe-area-inset-bottom,0px);
 }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;background:var(--bg);color:var(--w);font-family:var(--sans);overflow:hidden;-webkit-font-smoothing:antialiased;overscroll-behavior:none;}
+button{cursor:pointer;border:none;background:none;color:inherit;font:inherit;}
+input,textarea{font:inherit;color:inherit;background:none;border:none;outline:none;}
+textarea{resize:none;}
+::selection{background:var(--red);color:#fff;}
 
-/* ═══════════════════════════════════════
-   RESET & BASE
-═══════════════════════════════════════ */
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0; padding: 0;
-  -webkit-tap-highlight-color: transparent;
-}
-html, body {
-  height: 100%; width: 100%;
-  background: var(--bg);
-  color: var(--w);
-  font-family: var(--sans);
-  overflow: hidden;
-  -webkit-font-smoothing: antialiased;
-  overscroll-behavior: none;
-}
-button { cursor: pointer; border: none; background: none; color: inherit; font: inherit; }
-input, textarea { font: inherit; color: inherit; background: none; border: none; outline: none; }
-textarea { resize: none; }
-::selection { background: var(--red); color: #fff; }
+/* SHELL */
+#app{position:fixed;inset:0;padding-top:var(--sat);padding-bottom:var(--sab);display:flex;flex-direction:column;}
 
-/* ═══════════════════════════════════════
-   APP SHELL
-═══════════════════════════════════════ */
-#app {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  padding-top: var(--st);
-  padding-bottom: var(--sb);
-  padding-left: var(--sl);
-  padding-right: var(--sr);
-}
+/* HEADER */
+#hdr{flex-shrink:0;display:flex;align-items:center;padding:0 20px;height:52px;border-bottom:1px solid var(--b1);}
+#logo{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:6px;text-transform:uppercase;color:var(--w20);flex:1;}
+#logo b{color:var(--red);}
+#sync-dot{width:6px;height:6px;border-radius:50%;background:var(--b2);margin-right:10px;flex-shrink:0;transition:background .3s;}
+#sync-dot.on{background:#3ddc84;}
+#sync-dot.busy{background:var(--red);animation:pulse .8s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
+.hbtn{width:36px;height:36px;border-radius:50%;border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;color:var(--w40);margin-left:6px;transition:border-color .15s,color .15s;}
+.hbtn:active{background:var(--w05);}
 
-/* ═══════════════════════════════════════
-   HEADER
-═══════════════════════════════════════ */
-#hdr {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  padding: 14px 20px 10px;
-  gap: 10px;
-}
-#hdr-logo {
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 5px;
-  text-transform: uppercase;
-  color: var(--w30);
-  flex: 1;
-}
-#hdr-logo em { color: var(--red); font-style: normal; }
-.hdr-btn {
-  width: 34px; height: 34px;
-  border-radius: 50%;
-  border: 1px solid var(--brd);
-  display: flex; align-items: center; justify-content: center;
-  color: var(--w50);
-  transition: border-color .15s, color .15s;
-  font-size: 14px;
-}
-.hdr-btn:hover { border-color: var(--brd2); color: var(--w80); }
-.hdr-btn.active { border-color: var(--red); color: var(--red); }
-#sync-ring {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: var(--brd2);
-  transition: background .3s;
-  flex-shrink: 0;
-}
-#sync-ring.on   { background: #2ECC40; }
-#sync-ring.busy { background: var(--red); animation: blink .8s infinite; }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+/* TABS */
+#tabs{flex-shrink:0;display:flex;border-bottom:1px solid var(--b1);padding:0 4px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+#tabs::-webkit-scrollbar{display:none;}
+.tab{flex-shrink:0;font-family:var(--mono);font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--w20);padding:11px 14px 10px;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;position:relative;white-space:nowrap;}
+.tab.on{color:var(--w);border-bottom-color:var(--red);}
+.ct{display:none;align-items:center;justify-content:center;background:var(--red);color:#fff;font-size:8px;font-weight:700;width:14px;height:14px;border-radius:50%;margin-left:5px;vertical-align:middle;}
+.ct.show{display:inline-flex;}
 
-/* ═══════════════════════════════════════
-   TAB BAR
-═══════════════════════════════════════ */
-#tabs {
-  flex-shrink: 0;
-  display: flex;
-  padding: 0 20px;
-  gap: 0;
-  border-bottom: 1px solid var(--brd);
-}
-.tab {
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--w30);
-  padding: 10px 14px 9px;
-  border-bottom: 2px solid transparent;
-  transition: color .15s, border-color .15s;
-  position: relative;
-}
-.tab:first-child { padding-left: 0; }
-.tab.active { color: var(--w); border-bottom-color: var(--red); }
-.tab .badge {
-  position: absolute;
-  top: 7px; right: 2px;
-  width: 14px; height: 14px;
-  border-radius: 50%;
-  background: var(--red);
-  font-size: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 700;
-  line-height: 1;
-}
+/* PANELS */
+.panel{flex:1;overflow:hidden;display:none;flex-direction:column;}
+.panel.on{display:flex;}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
+.scroll::-webkit-scrollbar{display:none;}
 
-/* ═══════════════════════════════════════
-   PANELS
-═══════════════════════════════════════ */
-.panel {
-  flex: 1;
-  overflow: hidden;
-  display: none;
-  flex-direction: column;
-}
-.panel.active { display: flex; }
+/* TODO ITEMS */
+.td{display:flex;align-items:center;padding:15px 20px;border-bottom:1px solid var(--b1);gap:14px;cursor:pointer;user-select:none;transition:background .1s;}
+.td:active{background:var(--w05);}
+.ck{flex-shrink:0;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--w20);display:flex;align-items:center;justify-content:center;transition:border-color .15s,background .15s;}
+.ck svg{opacity:0;transition:opacity .15s;width:10px;height:10px;}
+.td.done .ck{background:var(--w05);border-color:var(--b2);}
+.td.done .ck svg{opacity:.25;}
+.td-text{flex:1;font-size:15px;color:var(--w70);line-height:1.35;word-break:break-word;}
+.td.done .td-text{text-decoration:line-through;color:var(--w20);}
+.cat-pill{font-family:var(--mono);font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--w20);border:1px solid var(--b2);border-radius:100px;padding:3px 8px;margin-top:3px;display:inline-block;}
+.td-btns{display:flex;flex-shrink:0;opacity:0;transition:opacity .15s;}
+.td:active .td-btns{opacity:1;}
+@media(hover:none){.td-btns{opacity:1;}}
+.tb{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--w20);transition:color .12s;}
+.tb:active{color:var(--w70);background:var(--w05);}
+.tb.foc-on{color:var(--red);}
 
-/* ═══════════════════════════════════════
-   SCROLL AREA
-═══════════════════════════════════════ */
-.scroll {
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
-}
-.scroll::-webkit-scrollbar { width: 2px; }
-.scroll::-webkit-scrollbar-thumb { background: var(--brd2); border-radius: 2px; }
+/* EMPTY */
+.empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;}
+.empty-ring{width:32px;height:32px;border-radius:50%;border:1px solid var(--b2);}
+.empty-txt{font-family:var(--mono);font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--w20);text-align:center;line-height:1.8;}
 
-/* ═══════════════════════════════════════
-   TODO ITEMS
-═══════════════════════════════════════ */
-.todo-list { padding: 8px 0; }
-.section-head {
-  font-family: var(--mono);
-  font-size: 8px;
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  color: var(--w15);
-  padding: 16px 20px 8px;
-}
-.section-head:first-child { padding-top: 8px; }
+/* ADD BAR */
+.add-bar{flex-shrink:0;border-top:1px solid var(--b1);padding:10px 16px;display:flex;align-items:center;gap:10px;background:var(--bg);}
+.add-input{flex:1;font-size:15px;color:var(--w70);caret-color:var(--red);padding:4px 0;}
+.add-input::placeholder{color:var(--w20);}
+.add-btn{flex-shrink:0;width:36px;height:36px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;transition:opacity .15s;}
+.add-btn:active{opacity:.7;}
 
-.td {
-  display: flex;
-  align-items: center;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--brd);
-  gap: 14px;
-  transition: background .12s;
-  -webkit-user-select: none;
-}
-.td:active { background: var(--w04); }
+/* FOCUS / POMODORO */
+.pomo-wrap{display:flex;flex-direction:column;align-items:center;padding:28px 20px 20px;border-bottom:1px solid var(--b1);}
+.pomo-ring-wrap{position:relative;width:140px;height:140px;margin-bottom:16px;}
+.pomo-svg{width:140px;height:140px;transform:rotate(-90deg);}
+.pr-bg{fill:none;stroke:var(--b1);stroke-width:1.5;}
+.pr-fg{fill:none;stroke:var(--red);stroke-width:1.5;stroke-linecap:round;transition:stroke-dashoffset .5s linear;}
+.pomo-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;}
+.pomo-digits{font-family:var(--mono);font-size:32px;font-weight:700;letter-spacing:2px;color:var(--w70);}
+.pomo-lbl{font-family:var(--mono);font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--w20);}
+.pomo-rounds{display:flex;gap:6px;margin-bottom:18px;}
+.pr-dot{width:5px;height:5px;border-radius:50%;border:1px solid var(--w20);transition:background .2s;}
+.pr-dot.done{background:var(--red);border-color:var(--red);}
+.pomo-btns{display:flex;gap:14px;align-items:center;}
+.pomo-btn{width:44px;height:44px;border-radius:50%;border:1px solid var(--b2);display:flex;align-items:center;justify-content:center;color:var(--w40);transition:border-color .15s,color .15s;}
+.pomo-btn:active{background:var(--w05);}
+.pomo-btn.primary{border-color:var(--red);color:var(--w);background:var(--rs);}
+.pomo-btn.primary:active{opacity:.8;}
+.ftask{display:flex;align-items:center;padding:14px 20px;border-bottom:1px solid var(--b1);gap:14px;cursor:pointer;transition:background .1s;}
+.ftask:active{background:var(--w05);}
+.ftask.done .ftxt{text-decoration:line-through;color:var(--w20);}
+.ftask.done .ck{border-color:var(--b2);}
+.ftxt{flex:1;font-size:15px;color:var(--w70);}
+.fcat{font-family:var(--mono);font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--w20);}
 
-.ck {
-  flex-shrink: 0;
-  width: 18px; height: 18px;
-  border-radius: 50%;
-  border: 1.5px solid var(--w15);
-  display: flex; align-items: center; justify-content: center;
-  transition: border-color .15s, background .15s;
-}
-.ck svg { opacity: 0; transition: opacity .15s; }
-.td:hover .ck { border-color: var(--w30); }
-.td.done .ck { background: var(--w08); border-color: var(--brd2); }
-.td.done .ck svg { opacity: .3; }
+/* NOTES LIST */
+.note-row{padding:16px 20px;border-bottom:1px solid var(--b1);cursor:pointer;transition:background .1s;}
+.note-row:active{background:var(--w05);}
+.note-ttl{font-family:var(--mono);font-size:13px;color:var(--w70);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.note-prv{font-size:13px;color:var(--w20);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px;}
+.note-dt{font-family:var(--mono);font-size:9px;color:var(--w20);letter-spacing:1px;}
+.notes-add{flex-shrink:0;border-top:1px solid var(--b1);padding:12px 16px;}
+.notes-add button{width:100%;padding:13px;border:1px solid var(--b2);border-radius:10px;font-family:var(--mono);font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--w20);transition:border-color .15s,color .15s;}
+.notes-add button:active{border-color:var(--w40);color:var(--w40);}
 
-.td-body { flex: 1; min-width: 0; }
-.td-text {
-  font-size: 15px;
-  font-weight: 400;
-  color: var(--w80);
-  line-height: 1.35;
-  word-break: break-word;
-}
-.td.done .td-text { text-decoration: line-through; color: var(--w15); }
-.td-cat {
-  font-family: var(--mono);
-  font-size: 8px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--w15);
-  margin-top: 3px;
-}
+/* NOTE EDITOR */
+#ed{position:fixed;inset:0;padding-top:var(--sat);padding-bottom:var(--sab);background:var(--bg);display:flex;flex-direction:column;z-index:500;transform:translateX(100%);transition:transform .26s cubic-bezier(.4,0,.2,1);}
+#ed.open{transform:translateX(0);}
+#ed-nav{flex-shrink:0;display:flex;align-items:center;padding:0 16px;height:50px;border-bottom:1px solid var(--b1);gap:8px;}
+#ed-back{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--w40);padding:8px 4px;}
+#ed-back:active{color:var(--w70);}
+#ed-del{margin-left:auto;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--w20);}
+#ed-del:active{color:var(--red);}
+#ed-title{flex-shrink:0;font-family:var(--mono);font-size:17px;font-weight:700;padding:14px 20px 12px;border-bottom:1px solid var(--b1);caret-color:var(--red);color:var(--w);}
+#ed-title::placeholder{color:var(--w20);}
+#ed-tb{flex-shrink:0;display:flex;align-items:center;padding:5px 12px;gap:1px;border-bottom:1px solid var(--b1);overflow-x:auto;}
+#ed-tb::-webkit-scrollbar{display:none;}
+.tbb{flex-shrink:0;width:34px;height:34px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;color:var(--w20);transition:color .12s,background .12s;}
+.tbb:active{color:var(--w70);background:var(--w05);}
+.tbb.on{color:var(--red);}
+.tsep{width:1px;height:16px;background:var(--b1);margin:0 3px;flex-shrink:0;}
+#ed-body{flex:1;position:relative;overflow:hidden;}
+#ed-ta{position:absolute;inset:0;font-family:var(--mono);font-size:13px;line-height:1.85;color:var(--w40);caret-color:var(--red);padding:16px 20px;overflow-y:auto;-webkit-overflow-scrolling:touch;white-space:pre-wrap;word-break:break-word;}
+#ed-ta::placeholder{color:var(--w20);}
+#ed-ta::-webkit-scrollbar{display:none;}
+#ed-prev{position:absolute;inset:0;overflow-y:auto;padding:16px 20px;-webkit-overflow-scrolling:touch;font-size:14px;line-height:1.75;color:var(--w40);display:none;background:var(--bg);z-index:2;}
+#ed-prev::-webkit-scrollbar{display:none;}
+#ed-prev.on{display:block;}
+#ed-prev h1{font-family:var(--mono);font-size:17px;color:var(--w70);margin:1.2em 0 .5em;border-bottom:1px solid var(--b1);padding-bottom:6px;}
+#ed-prev h2{font-family:var(--mono);font-size:14px;color:var(--w70);margin:1em 0 .4em;}
+#ed-prev h3{font-family:var(--mono);font-size:12px;color:var(--w40);margin:.8em 0 .3em;}
+#ed-prev p{margin:.5em 0;}
+#ed-prev strong{color:var(--w70);font-weight:600;}
+#ed-prev em{font-style:italic;}
+#ed-prev code{font-family:var(--mono);font-size:12px;background:var(--w05);padding:1px 5px;border-radius:3px;color:var(--red);}
+#ed-prev pre{background:var(--w05);padding:12px;border-radius:3px;margin:.8em 0;overflow-x:auto;}
+#ed-prev pre code{background:none;padding:0;color:var(--w40);}
+#ed-prev ul,#ed-prev ol{padding-left:20px;margin:.4em 0;}
+#ed-prev li{margin:.2em 0;}
+#ed-prev blockquote{border-left:2px solid var(--red);padding-left:12px;color:var(--w20);margin:.8em 0;}
+#ed-prev hr{border:none;border-top:1px solid var(--b1);margin:1.5em 0;}
+#ed-prev a.wl{color:var(--red);border-bottom:1px dotted var(--red);cursor:pointer;text-decoration:none;font-family:var(--mono);font-size:.9em;}
+#ed-prev a.wl.new{color:var(--w20);border-bottom-color:var(--b2);}
+#ed-bl{flex-shrink:0;border-top:1px solid var(--b1);display:none;}
+#ed-bl.on{display:block;}
+.bl-hd{font-family:var(--mono);font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--w20);padding:8px 20px 6px;}
+.bl-row{padding:9px 20px;font-size:13px;color:var(--w20);cursor:pointer;display:flex;align-items:center;gap:8px;}
+.bl-row::before{content:'←';color:var(--red);font-family:var(--mono);font-size:10px;}
+.bl-row:active{color:var(--w40);}
 
-.td-actions {
-  display: flex;
-  gap: 2px;
-  flex-shrink: 0;
-}
-.act-btn {
-  width: 30px; height: 30px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  color: var(--w15);
-  transition: color .12s, background .12s;
-}
-.act-btn:hover { color: var(--w50); background: var(--w04); }
-.act-btn.focus-on { color: var(--red); }
-.act-btn.del:hover { color: var(--red); }
+/* AUTOCOMPLETE */
+#ac{position:fixed;background:var(--s1);border:1px solid var(--b2);border-radius:10px;z-index:800;min-width:200px;max-width:300px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.9);display:none;}
+#ac.on{display:block;}
+#ac-hd{padding:8px 14px 6px;font-family:var(--mono);font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--w20);border-bottom:1px solid var(--b1);}
+.ac-row{padding:10px 14px;font-family:var(--mono);font-size:12px;color:var(--w40);display:flex;align-items:center;gap:10px;cursor:pointer;}
+.ac-row.sel,.ac-row:active{background:var(--w05);color:var(--w70);}
+.ac-ico{font-size:10px;color:var(--red);}
 
-.focus-indicator {
-  width: 4px; height: 4px;
-  border-radius: 50%;
-  background: var(--red);
-  flex-shrink: 0;
-  margin-right: -6px;
-}
+/* DRIVE SHEET */
+#drv-ov{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:900;display:none;align-items:flex-end;}
+#drv-ov.on{display:flex;}
+#drv-sh{width:100%;background:var(--s1);border-top:1px solid var(--b2);border-radius:20px 20px 0 0;padding:20px 24px calc(20px + env(safe-area-inset-bottom,0px));animation:slideUp .22s ease;}
+@keyframes slideUp{from{transform:translateY(100%)}}
+.sh-handle{width:36px;height:3px;background:var(--b2);border-radius:2px;margin:0 auto 18px;}
+.sh-title{font-family:var(--mono);font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--w40);margin-bottom:16px;}
+.sh-note{font-size:12px;color:var(--w20);line-height:1.6;margin-bottom:16px;}
+.sh-note a{color:var(--red);}
+.sh-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--w20);margin-bottom:8px;display:block;}
+#ds-input{width:100%;background:var(--w05);border:1px solid var(--b2);border-radius:8px;padding:12px 14px;font-family:var(--mono);font-size:12px;color:var(--w70);caret-color:var(--red);margin-bottom:16px;}
+#ds-input::placeholder{color:var(--w20);}
+.sh-btns{display:flex;gap:10px;}
+.sh-btn{flex:1;padding:13px;border-radius:10px;border:1px solid var(--b2);font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--w40);}
+.sh-btn:active{border-color:var(--w40);color:var(--w70);}
+.sh-btn.primary{background:var(--red);border-color:var(--red);color:#fff;}
+.sh-btn.primary:active{opacity:.85;}
 
-/* ═══════════════════════════════════════
-   EMPTY STATE
-═══════════════════════════════════════ */
-.empty {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 40px;
-}
-.empty-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  border: 1px solid var(--w15);
-}
-.empty-text {
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--w15);
-  text-align: center;
-}
-
-/* ═══════════════════════════════════════
-   ADD TODO BAR
-═══════════════════════════════════════ */
-#add-bar {
-  flex-shrink: 0;
-  border-top: 1px solid var(--brd);
-  padding: 12px 20px;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  background: var(--bg);
-}
-#add-input {
-  flex: 1;
-  font-size: 15px;
-  color: var(--w80);
-  caret-color: var(--red);
-}
-#add-input::placeholder { color: var(--w15); }
-#cat-toggle {
-  font-family: var(--mono);
-  font-size: 8px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--w30);
-  padding: 6px 10px;
-  border: 1px solid var(--brd2);
-  border-radius: 100px;
-  transition: border-color .15s, color .15s;
-}
-#cat-toggle.work { color: var(--w50); border-color: var(--w15); }
-#add-btn {
-  width: 34px; height: 34px;
-  border-radius: 50%;
-  background: var(--red);
-  display: flex; align-items: center; justify-content: center;
-  transition: opacity .15s;
-  flex-shrink: 0;
-}
-#add-btn:active { opacity: .7; }
-
-/* ═══════════════════════════════════════
-   FOCUS PANEL
-═══════════════════════════════════════ */
-#focus-panel .focus-tasks { padding: 8px 0 4px; }
-.focus-task-row {
-  display: flex;
-  align-items: center;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--brd);
-  gap: 14px;
-}
-.focus-task-row .ck { width: 18px; height: 18px; border-color: var(--w15); }
-.focus-task-row .ftxt { flex: 1; font-size: 15px; color: var(--w80); }
-.focus-task-row .fcat {
-  font-family: var(--mono); font-size: 8px; letter-spacing: 2px;
-  text-transform: uppercase; color: var(--w15);
-}
-.focus-task-row.done .ftxt { text-decoration: line-through; color: var(--w15); }
-.focus-task-row.done .ck { border-color: var(--brd2); }
-.focus-task-row.done .ck svg { opacity: .3; }
-
-/* Pomodoro */
-.pomo-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 28px 20px 20px;
-  border-bottom: 1px solid var(--brd);
-}
-.pomo-ring-wrap { position: relative; width: 148px; height: 148px; margin-bottom: 18px; }
-.pomo-svg { width: 148px; height: 148px; transform: rotate(-90deg); }
-.pr-bg { fill: none; stroke: var(--brd); stroke-width: 1.5; }
-.pr-fg { fill: none; stroke: var(--red); stroke-width: 1.5; stroke-linecap: round; transition: stroke-dashoffset .5s linear; }
-.pomo-inner {
-  position: absolute; inset: 0;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 2px;
-}
-.pomo-digits {
-  font-family: var(--mono);
-  font-size: 34px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  color: var(--w80);
-}
-.pomo-mode {
-  font-family: var(--mono);
-  font-size: 8px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--w15);
-}
-.pomo-rounds {
-  display: flex; gap: 6px; margin-bottom: 18px;
-}
-.pr-dot {
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  border: 1px solid var(--w15);
-  transition: background .2s, border-color .2s;
-}
-.pr-dot.done { background: var(--red); border-color: var(--red); }
-.pomo-btns { display: flex; gap: 12px; align-items: center; }
-.pomo-btn {
-  width: 44px; height: 44px;
-  border-radius: 50%;
-  border: 1px solid var(--brd2);
-  display: flex; align-items: center; justify-content: center;
-  color: var(--w50);
-  transition: border-color .15s, color .15s, background .15s;
-}
-.pomo-btn:hover { border-color: var(--w30); color: var(--w80); }
-.pomo-btn.primary { border-color: var(--red); color: var(--w); background: var(--rs); }
-.pomo-btn.primary:hover { background: var(--red); }
-
-/* ═══════════════════════════════════════
-   NOTES PANEL
-═══════════════════════════════════════ */
-#notes-panel {
-  /* uses .panel flex structure */
-}
-/* Note list (default view) */
-#note-list-view {
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
-}
-#note-list-view::-webkit-scrollbar { display: none; }
-
-.note-row {
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--brd);
-  transition: background .12s;
-  cursor: pointer;
-}
-.note-row:active { background: var(--w04); }
-.note-row-title {
-  font-family: var(--mono);
-  font-size: 13px;
-  color: var(--w80);
-  margin-bottom: 4px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.note-row-preview {
-  font-size: 13px;
-  color: var(--w30);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-bottom: 4px;
-}
-.note-row-meta {
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 1px;
-  color: var(--w15);
-}
-
-/* ─── Note Editor (full-screen overlay) ─── */
-#note-editor {
-  position: fixed;
-  inset: 0;
-  padding-top: var(--st);
-  padding-bottom: var(--sb);
-  background: var(--bg);
-  display: flex;
-  flex-direction: column;
-  z-index: 500;
-  transform: translateX(100%);
-  transition: transform .25s cubic-bezier(.4,0,.2,1);
-}
-#note-editor.open { transform: translateX(0); }
-
-#ed-top {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  gap: 10px;
-  border-bottom: 1px solid var(--brd);
-}
-#ed-back {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--w50);
-  display: flex; align-items: center; gap: 6px;
-  padding: 6px 0;
-}
-#ed-back svg { flex-shrink: 0; }
-#ed-del {
-  margin-left: auto;
-  color: var(--w15);
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  transition: color .15s;
-}
-#ed-del:hover { color: var(--red); }
-
-#ed-title {
-  flex-shrink: 0;
-  font-family: var(--mono);
-  font-size: 18px;
-  font-weight: 700;
-  padding: 14px 20px 10px;
-  border-bottom: 1px solid var(--brd);
-  caret-color: var(--red);
-  color: var(--w);
-}
-#ed-title::placeholder { color: var(--w15); }
-
-/* Toolbar */
-#ed-toolbar {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  padding: 6px 14px;
-  gap: 2px;
-  border-bottom: 1px solid var(--brd);
-  overflow-x: auto;
-}
-#ed-toolbar::-webkit-scrollbar { display: none; }
-.tb-btn {
-  flex-shrink: 0;
-  width: 32px; height: 32px;
-  border-radius: 6px;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--w30);
-  transition: color .12s, background .12s;
-}
-.tb-btn:hover, .tb-btn.on { color: var(--w80); background: var(--w08); }
-.tb-sep { width: 1px; height: 18px; background: var(--brd); margin: 0 4px; flex-shrink: 0; }
-.tb-btn.preview-on { color: var(--red); }
-
-/* Editor body */
-#ed-body {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-}
-#ed-textarea {
-  position: absolute; inset: 0;
-  font-family: var(--mono);
-  font-size: 13px;
-  line-height: 1.8;
-  color: var(--w50);
-  caret-color: var(--red);
-  padding: 16px 20px;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  tab-size: 2;
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-#ed-textarea::placeholder { color: var(--w15); }
-#ed-textarea::-webkit-scrollbar { display: none; }
-
-#ed-preview {
-  position: absolute; inset: 0;
-  overflow-y: auto;
-  padding: 16px 20px;
-  -webkit-overflow-scrolling: touch;
-  font-size: 14px;
-  line-height: 1.75;
-  color: var(--w50);
-  display: none;
-  background: var(--bg);
-  z-index: 2;
-}
-#ed-preview::-webkit-scrollbar { display: none; }
-#ed-preview.visible { display: block; }
-
-/* Markdown render */
-#ed-preview h1 { font-family: var(--mono); font-size: 17px; color: var(--w80); margin: 1.2em 0 .5em; border-bottom: 1px solid var(--brd); padding-bottom: 6px; }
-#ed-preview h2 { font-family: var(--mono); font-size: 14px; color: var(--w80); margin: 1em 0 .4em; }
-#ed-preview h3 { font-family: var(--mono); font-size: 12px; color: var(--w50); margin: .8em 0 .3em; }
-#ed-preview p { margin: .5em 0; }
-#ed-preview strong { color: var(--w80); font-weight: 600; }
-#ed-preview em { color: var(--w50); font-style: italic; }
-#ed-preview code { font-family: var(--mono); font-size: 12px; background: var(--w04); padding: 1px 5px; border-radius: 3px; color: var(--red); }
-#ed-preview pre { background: var(--w04); padding: 12px; border-radius: 3px; margin: .8em 0; overflow-x: auto; }
-#ed-preview pre code { background: none; padding: 0; color: var(--w50); }
-#ed-preview ul, #ed-preview ol { padding-left: 20px; margin: .4em 0; }
-#ed-preview li { margin: .2em 0; }
-#ed-preview blockquote { border-left: 2px solid var(--red); padding-left: 12px; color: var(--w30); margin: .8em 0; }
-#ed-preview hr { border: none; border-top: 1px solid var(--brd); margin: 1.5em 0; }
-#ed-preview a.wiki-link { color: var(--red); border-bottom: 1px dotted var(--red); cursor: pointer; text-decoration: none; font-family: var(--mono); font-size: .9em; }
-#ed-preview a.wiki-link.new { color: var(--w30); border-bottom-color: var(--w15); }
-#ed-preview a.wiki-link:active { opacity: .6; }
-
-/* ═══════════════════════════════════════
-   WIKI AUTOCOMPLETE
-═══════════════════════════════════════ */
-#ac-popup {
-  position: fixed;
-  background: var(--cd);
-  border: 1px solid var(--brd2);
-  border-radius: 8px;
-  z-index: 800;
-  min-width: 220px;
-  max-width: 320px;
-  overflow: hidden;
-  box-shadow: 0 12px 40px rgba(0,0,0,.9);
-  display: none;
-}
-#ac-popup.show { display: block; }
-#ac-popup-head {
-  padding: 8px 14px 6px;
-  font-family: var(--mono);
-  font-size: 8px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--w15);
-  border-bottom: 1px solid var(--brd);
-}
-.ac-opt {
-  padding: 10px 14px;
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--w50);
-  display: flex; align-items: center; gap: 10px;
-  cursor: pointer;
-  transition: background .1s, color .1s;
-}
-.ac-opt:hover, .ac-opt.sel { background: var(--w04); color: var(--w80); }
-.ac-opt .ac-icon { font-size: 10px; color: var(--red); }
-.ac-opt.new-opt { color: var(--w30); }
-.ac-opt.new-opt .ac-icon { color: var(--w15); }
-
-/* ═══════════════════════════════════════
-   BACKLINKS BAR
-═══════════════════════════════════════ */
-#ed-backlinks {
-  flex-shrink: 0;
-  border-top: 1px solid var(--brd);
-  padding: 8px 0;
-  display: none;
-}
-#ed-backlinks.has-links { display: block; }
-#ed-backlinks .bl-head {
-  font-family: var(--mono);
-  font-size: 8px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--w15);
-  padding: 4px 20px 8px;
-}
-.bl-row {
-  padding: 8px 20px;
-  font-size: 13px;
-  color: var(--w30);
-  cursor: pointer;
-  transition: color .12s;
-  display: flex; align-items: center; gap: 8px;
-}
-.bl-row:hover { color: var(--w50); }
-.bl-row::before { content: '←'; color: var(--red); font-family: var(--mono); font-size: 11px; }
-
-/* ═══════════════════════════════════════
-   DRIVE CONNECT OVERLAY
-═══════════════════════════════════════ */
-#drive-overlay {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,.92);
-  z-index: 900;
-  display: flex; align-items: flex-end;
-  display: none;
-}
-#drive-overlay.show { display: flex; }
-#drive-sheet {
-  width: 100%;
-  background: var(--sf);
-  border-top: 1px solid var(--brd2);
-  border-radius: 20px 20px 0 0;
-  padding: 24px 24px calc(24px + env(safe-area-inset-bottom, 0px));
-  animation: slideUp .25s ease;
-}
-@keyframes slideUp { from { transform: translateY(100%); } }
-.ds-handle {
-  width: 36px; height: 3px;
-  background: var(--w15);
-  border-radius: 2px;
-  margin: 0 auto 20px;
-}
-.ds-title {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  color: var(--w50);
-  margin-bottom: 16px;
-}
-.ds-label {
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--w30);
-  margin-bottom: 8px;
-}
-#ds-input {
-  width: 100%;
-  background: var(--w04);
-  border: 1px solid var(--brd2);
-  border-radius: 8px;
-  padding: 12px 14px;
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--w80);
-  caret-color: var(--red);
-  margin-bottom: 16px;
-}
-#ds-input::placeholder { color: var(--w15); }
-.ds-btns { display: flex; gap: 10px; }
-.ds-btn {
-  flex: 1; padding: 14px;
-  border-radius: 10px;
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  border: 1px solid var(--brd2);
-  color: var(--w50);
-  transition: border-color .15s, color .15s, background .15s;
-}
-.ds-btn.primary { background: var(--red); border-color: var(--red); color: #fff; }
-.ds-btn:hover { border-color: var(--w30); color: var(--w80); }
-.ds-btn.primary:hover { opacity: .9; }
-
-/* ═══════════════════════════════════════
-   TOAST
-═══════════════════════════════════════ */
-#toast {
-  position: fixed;
-  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
-  left: 50%; transform: translateX(-50%) translateY(20px);
-  background: var(--cd);
-  border: 1px solid var(--brd2);
-  border-radius: 100px;
-  padding: 10px 20px;
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 2px;
-  color: var(--w50);
-  white-space: nowrap;
-  opacity: 0;
-  transition: opacity .2s, transform .2s;
-  pointer-events: none;
-  z-index: 999;
-}
-#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+/* TOAST */
+#toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%) translateY(16px);background:var(--s2);border:1px solid var(--b2);border-radius:100px;padding:9px 18px;font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--w40);white-space:nowrap;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;z-index:999;}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
-
 <div id="app">
 
-  <!-- HEADER -->
   <div id="hdr">
-    <div id="hdr-logo">N<em>·</em>TO·DO</div>
-    <div id="sync-ring"></div>
-    <button class="hdr-btn" id="btn-drive" title="Google Drive" onclick="openDriveSheet()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-      </svg>
+    <div id="logo">N<b>·</b>OS</div>
+    <div id="sync-dot"></div>
+    <button class="hbtn" onclick="openDrv()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
     </button>
-    <button class="hdr-btn" id="btn-new" title="Neu (N)" onclick="handleNew()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-      </svg>
+    <button class="hbtn" onclick="handleNew()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
     </button>
   </div>
 
-  <!-- TABS -->
   <div id="tabs">
-    <button class="tab active" id="tab-privat" onclick="switchTab('privat')">
-      Privat<span class="badge" id="badge-privat" style="display:none">0</span>
-    </button>
-    <button class="tab" id="tab-arbeit" onclick="switchTab('arbeit')">
-      Arbeit<span class="badge" id="badge-arbeit" style="display:none">0</span>
-    </button>
-    <button class="tab" id="tab-focus" onclick="switchTab('focus')">Fokus</button>
-    <button class="tab" id="tab-done" onclick="switchTab('done')">Done</button>
-    <button class="tab" id="tab-notes" onclick="switchTab('notes')">Notizen</button>
+    <button class="tab on" id="tab-privat" onclick="goTab('privat')">Privat<span class="ct" id="ct-privat"></span></button>
+    <button class="tab" id="tab-arbeit" onclick="goTab('arbeit')">Arbeit<span class="ct" id="ct-arbeit"></span></button>
+    <button class="tab" id="tab-fokus" onclick="goTab('fokus')">Fokus</button>
+    <button class="tab" id="tab-done" onclick="goTab('done')">Done</button>
+    <button class="tab" id="tab-notizen" onclick="goTab('notizen')">Notizen</button>
   </div>
 
-  <!-- PANEL: PRIVAT -->
-  <div class="panel active" id="panel-privat">
-    <div class="scroll todo-list" id="list-privat"></div>
-    <div id="add-bar">
-      <input id="add-input" type="text" placeholder="Neue Aufgabe …" autocomplete="off"
-             onkeydown="if(event.key==='Enter') addTodo()">
-      <button id="cat-toggle" onclick="toggleCat()">Privat</button>
-      <button id="add-btn" onclick="addTodo()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round">
-          <polyline points="20 6 9 17 4 12"/>
-        </svg>
+  <!-- PRIVAT -->
+  <div class="panel on" id="panel-privat">
+    <div class="scroll" id="list-privat"></div>
+    <div class="add-bar">
+      <input class="add-input" id="inp-privat" placeholder="Aufgabe hinzufügen …" autocomplete="off" onkeydown="if(event.key==='Enter')addTodo('privat')">
+      <button class="add-btn" onclick="addTodo('privat')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
       </button>
     </div>
   </div>
 
-  <!-- PANEL: ARBEIT -->
+  <!-- ARBEIT -->
   <div class="panel" id="panel-arbeit">
-    <div class="scroll todo-list" id="list-arbeit"></div>
-    <div style="padding:12px 20px;border-top:1px solid var(--brd);font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--w15)">
-      Aufgabe oben unter „Privat" hinzufügen → Kategorie auf Arbeit schalten
+    <div class="scroll" id="list-arbeit"></div>
+    <div class="add-bar">
+      <input class="add-input" id="inp-arbeit" placeholder="Aufgabe hinzufügen …" autocomplete="off" onkeydown="if(event.key==='Enter')addTodo('arbeit')">
+      <button class="add-btn" onclick="addTodo('arbeit')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </button>
     </div>
   </div>
 
-  <!-- PANEL: FOKUS -->
-  <div class="panel" id="panel-focus">
-    <div class="scroll" id="focus-scroll">
-      <!-- Pomodoro Timer -->
+  <!-- FOKUS -->
+  <div class="panel" id="panel-fokus">
+    <div class="scroll" id="fokus-scroll">
       <div class="pomo-wrap">
         <div class="pomo-ring-wrap">
-          <svg class="pomo-svg" viewBox="0 0 148 148">
-            <circle class="pr-bg" cx="74" cy="74" r="68"/>
-            <circle class="pr-fg" id="pomo-arc" cx="74" cy="74" r="68"
-              stroke-dasharray="427.26" stroke-dashoffset="0"/>
+          <svg class="pomo-svg" viewBox="0 0 140 140">
+            <circle class="pr-bg" cx="70" cy="70" r="64"/>
+            <circle class="pr-fg" id="pomo-arc" cx="70" cy="70" r="64" stroke-dasharray="402.12" stroke-dashoffset="0"/>
           </svg>
           <div class="pomo-inner">
             <div class="pomo-digits" id="pomo-time">25:00</div>
-            <div class="pomo-mode" id="pomo-mode">FOKUS</div>
+            <div class="pomo-lbl" id="pomo-mode">FOKUS</div>
           </div>
         </div>
         <div class="pomo-rounds" id="pomo-rounds"></div>
         <div class="pomo-btns">
-          <button class="pomo-btn" onclick="pomoCycle(-1)" title="Zurück">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-              <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
-            </svg>
+          <button class="pomo-btn" onclick="pomoCycle(-1)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
           </button>
-          <button class="pomo-btn primary" id="pomo-play" onclick="pomoToggle()">
-            <svg id="pomo-icon-play" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-              <polygon points="5 3 19 12 5 21 5 3"/>
-            </svg>
-            <svg id="pomo-icon-pause" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="display:none">
-              <rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>
-            </svg>
+          <button class="pomo-btn primary" onclick="pomoToggle()">
+            <svg id="ico-play" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <svg id="ico-pause" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
           </button>
-          <button class="pomo-btn" onclick="pomoSkip()" title="Überspringen">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-              <polyline points="5 12 19 12 14 7"/><polyline points="14 17 19 12"/>
-            </svg>
+          <button class="pomo-btn" onclick="pomoSkip()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="5 12 19 12 14 7"/><polyline points="14 17 19 12"/></svg>
           </button>
         </div>
       </div>
-      <!-- Focus Tasks -->
-      <div id="focus-tasks"></div>
+      <div id="fokus-tasks"></div>
     </div>
   </div>
 
-  <!-- PANEL: DONE -->
+  <!-- DONE -->
   <div class="panel" id="panel-done">
-    <div class="scroll todo-list" id="list-done"></div>
+    <div class="scroll" id="list-done"></div>
   </div>
 
-  <!-- PANEL: NOTES (list view) -->
-  <div class="panel" id="panel-notes">
-    <div id="note-list-view" class="scroll"></div>
-    <div style="padding:12px 20px;border-top:1px solid var(--brd)">
-      <button onclick="createNote()" style="width:100%;padding:13px;background:var(--w04);border:1px solid var(--brd2);border-radius:10px;font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--w30);transition:border-color .15s,color .15s"
-        onmouseover="this.style.borderColor='var(--brd2)';this.style.color='var(--w50)'"
-        onmouseout="this.style.borderColor='var(--brd2)';this.style.color='var(--w30)'">
-        + Neue Notiz
-      </button>
-    </div>
+  <!-- NOTIZEN -->
+  <div class="panel" id="panel-notizen">
+    <div class="scroll" id="note-list"></div>
+    <div class="notes-add"><button onclick="createNote()">+ Neue Notiz</button></div>
   </div>
 
-</div><!-- /app -->
+</div>
 
-<!-- NOTE EDITOR (slide-in) -->
-<div id="note-editor">
-  <div id="ed-top">
-    <button id="ed-back" onclick="closeEditor()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-        <polyline points="15 18 9 12 15 6"/>
-      </svg>
+<!-- NOTE EDITOR -->
+<div id="ed">
+  <div id="ed-nav">
+    <button id="ed-back" onclick="closeEd()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
       Notizen
     </button>
-    <button id="ed-del" onclick="deleteCurrentNote()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/>
-        <path d="M9 6V4h6v2"/>
-      </svg>
+    <button id="ed-del" onclick="delNote()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
     </button>
   </div>
   <input id="ed-title" type="text" placeholder="Titel …" oninput="onTitleInput(this.value)">
-  <div id="ed-toolbar">
-    <button class="tb-btn" onclick="wrap('**','**')" title="Fett">B</button>
-    <button class="tb-btn" style="font-style:italic" onclick="wrap('*','*')" title="Kursiv">I</button>
-    <button class="tb-btn" onclick="wrap('`','`')" title="Code">`</button>
-    <div class="tb-sep"></div>
-    <button class="tb-btn" onclick="insertLine('## ')" title="H2">H2</button>
-    <button class="tb-btn" onclick="insertLine('### ')" title="H3">H3</button>
-    <div class="tb-sep"></div>
-    <button class="tb-btn" onclick="insertLine('- ')" title="Liste">—</button>
-    <button class="tb-btn" onclick="insertLine('> ')" title="Zitat">»</button>
-    <div class="tb-sep"></div>
-    <button class="tb-btn" id="tb-wiki" onclick="insertWiki()" title="Notiz verlinken">[[</button>
-    <div class="tb-sep"></div>
-    <button class="tb-btn" id="tb-preview" onclick="togglePreview()" title="Vorschau">◎</button>
+  <div id="ed-tb">
+    <button class="tbb" onclick="wrap('**','**')">B</button>
+    <button class="tbb" style="font-style:italic" onclick="wrap('*','*')">I</button>
+    <button class="tbb" onclick="wrap('`','`')">`</button>
+    <div class="tsep"></div>
+    <button class="tbb" onclick="insLine('## ')">H2</button>
+    <button class="tbb" onclick="insLine('### ')">H3</button>
+    <div class="tsep"></div>
+    <button class="tbb" onclick="insLine('- ')">—</button>
+    <button class="tbb" onclick="insLine('> ')">»</button>
+    <div class="tsep"></div>
+    <button class="tbb" onclick="insWiki()">[[</button>
+    <div class="tsep"></div>
+    <button class="tbb" id="tb-prev" onclick="togglePrev()">◎</button>
   </div>
   <div id="ed-body">
-    <textarea id="ed-textarea" placeholder="Schreibe hier …&#10;&#10;Verlinke andere Notizen mit [[Notizname]]"></textarea>
-    <div id="ed-preview"></div>
+    <textarea id="ed-ta" placeholder="Schreibe hier …&#10;&#10;Verlinke Notizen mit [[Titel]]"></textarea>
+    <div id="ed-prev"></div>
   </div>
-  <div id="ed-backlinks">
-    <div class="bl-head">Rückverlinkungen</div>
+  <div id="ed-bl">
+    <div class="bl-hd">Rückverlinkungen</div>
     <div id="ed-bl-list"></div>
   </div>
 </div>
 
-<!-- WIKI AUTOCOMPLETE -->
-<div id="ac-popup">
-  <div id="ac-popup-head">Notiz auswählen</div>
-  <div id="ac-list"></div>
-</div>
+<!-- AUTOCOMPLETE -->
+<div id="ac"><div id="ac-hd">Notiz auswählen</div><div id="ac-list"></div></div>
 
 <!-- DRIVE SHEET -->
-<div id="drive-overlay" onclick="if(event.target===this)closeDriveSheet()">
-  <div id="drive-sheet">
-    <div class="ds-handle"></div>
-    <div class="ds-title">Google Drive Sync</div>
-    <div style="font-size:11px;color:var(--w30);margin-bottom:16px;line-height:1.6">In der <a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="color:var(--red)">Google Cloud Console</a> unter „Autorisierte JavaScript-Quellen" eintragen:<br><span style="font-family:var(--mono);font-size:10px;color:var(--w50)">https://frederiksuess.github.io</span></div>
-    <div class="ds-label">Google API Client ID</div>
-    <input id="ds-input" type="text" placeholder="xxxxxxxxx.apps.googleusercontent.com"
-           value="368244766898-da615t6bjr0q8lr0ujvqa362dd3c999q.apps.googleusercontent.com">
-    <div class="ds-btns">
-      <button class="ds-btn" onclick="closeDriveSheet()">Abbrechen</button>
-      <button class="ds-btn primary" onclick="connectDrive()">Verbinden</button>
+<div id="drv-ov" onclick="if(event.target===this)closeDrv()">
+  <div id="drv-sh">
+    <div class="sh-handle"></div>
+    <div class="sh-title">Google Drive Sync</div>
+    <div class="sh-note">In der <a href="https://console.cloud.google.com/apis/credentials" target="_blank">Google Cloud Console</a> unter „Autorisierte JavaScript-Quellen" eintragen:<br><span style="font-family:var(--mono);font-size:11px;color:var(--w40)">https://frederiksuess.github.io</span></div>
+    <span class="sh-label">Google API Client ID</span>
+    <input id="ds-input" type="text" placeholder="xxxxxxxxx.apps.googleusercontent.com">
+    <div class="sh-btns">
+      <button class="sh-btn" onclick="closeDrv()">Abbrechen</button>
+      <button class="sh-btn primary" onclick="connectDrive()">Verbinden</button>
     </div>
   </div>
 </div>
 
-<!-- TOAST -->
 <div id="toast"></div>
 
 <script>
-/* ═══════════════════════════════════════════════════
-   NOTHING TO-DO v4 — Tasks + Notes + Wiki + Drive
-═══════════════════════════════════════════════════ */
+const CLIENT_ID='368244766898-da615t6bjr0q8lr0ujvqa362dd3c999q.apps.googleusercontent.com';
+const DRV_SCOPE='https://www.googleapis.com/auth/drive.file';
+const DRV_FILE='nothing_todos.json';
+const LS_KEY='ntd_v5';
 
-// ──────────────────────────────────────────────────
-// STATE
-// ──────────────────────────────────────────────────
-const CLIENT_ID = '368244766898-da615t6bjr0q8lr0ujvqa362dd3c999q.apps.googleusercontent.com';
-const DRIVE_SCOPES = 'https://www.googleapis.com/auth/drive.file';
-const DRIVE_FILENAME = 'nothing_todos.json';
-const LS_KEY = 'ntd_v4';
+let S={todos:[],notes:{},tab:'privat',driveToken:null,driveFid:null};
+let P={sec:25*60,total:25*60,running:false,round:1,rounds:4,isBreak:false,iv:null};
+let activeNote=null,prevMode=false,acActive=false,acSel=0;
 
-let S = {
-  todos: [],   // {id, text, cat, done, focus, createdAt}
-  notes: {},   // {[id]: {id, title, content, updatedAt}}
-  tab: 'privat',
-  newCat: 'privat',
-  driveToken: null,
-  driveFid: null,
-};
-
-// Pomodoro state
-let P = {
-  sec: 25*60, total: 25*60, running: false,
-  round: 1, rounds: 4, isBreak: false,
-  iv: null,
-};
-
-let activeNoteId = null;
-let previewMode = false;
-
-// ──────────────────────────────────────────────────
 // STORAGE
-// ──────────────────────────────────────────────────
-function saveLocal() {
-  localStorage.setItem(LS_KEY, JSON.stringify({ todos: S.todos, notes: S.notes }));
-  scheduleDriveSync();
+function save(){localStorage.setItem(LS_KEY,JSON.stringify({todos:S.todos,notes:S.notes}));schedDrv();}
+function load(){
+  try{
+    const d=JSON.parse(localStorage.getItem(LS_KEY)||'{}');
+    const old=JSON.parse(localStorage.getItem('ntd_v4')||localStorage.getItem('ntd_v3')||'{}');
+    S.todos=d.todos||old.todos||[];
+    S.notes=d.notes||old.notes||{};
+    S.todos.forEach(t=>{if(!t.focus)t.focus=false;});
+  }catch(e){S.todos=[];S.notes={};}
 }
 
-function loadLocal() {
-  try {
-    const d = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
-    // Migrate old storage keys
-    const oldData = JSON.parse(localStorage.getItem('ntd_v3') || localStorage.getItem('nothing_todos_v3') || '{}');
-    S.todos = d.todos || oldData.todos || [];
-    S.notes = d.notes || {};
-    // Ensure focus field exists
-    S.todos.forEach(t => { if (t.focus === undefined) t.focus = false; });
-  } catch(e) { S.todos = []; S.notes = {}; }
-}
-
-// ──────────────────────────────────────────────────
-// DRIVE SYNC
-// ──────────────────────────────────────────────────
-let driveTimer = null;
-function scheduleDriveSync() {
-  if (!S.driveToken) return;
-  clearTimeout(driveTimer);
-  driveTimer = setTimeout(driveSave, 2500);
-}
-
-function setSyncUI(state) {
-  const r = document.getElementById('sync-ring');
-  r.className = 'sync-ring' + (state === 'on' ? ' on' : state === 'busy' ? ' busy' : '');
-  // Fix: re-add id attr because className replacement removes id
-  r.id = 'sync-ring';
-}
-
-function openDriveSheet() {
-  document.getElementById('drive-overlay').classList.add('show');
-}
-function closeDriveSheet() {
-  document.getElementById('drive-overlay').classList.remove('show');
-}
-
-function connectDrive() {
-  const cid = document.getElementById('ds-input').value.trim();
-  if (!cid) return;
-  closeDriveSheet();
-  // Use Google Identity Services — no redirect URI needed
-  if (typeof google === 'undefined' || !google.accounts) {
-    toast('Google-Script lädt noch, kurz warten …');
-    setTimeout(() => connectDrive(), 1500);
-    return;
-  }
-  const client = google.accounts.oauth2.initTokenClient({
-    client_id: cid,
-    scope: DRIVE_SCOPES,
-    callback: (resp) => {
-      if (resp.error) { toast('Fehler: ' + resp.error); return; }
-      S.driveToken = resp.access_token;
-      setSyncUI('on');
-      toast('Drive verbunden ✓');
-      driveLoad();
-    },
+// DRIVE
+let drvTimer=null;
+function schedDrv(){if(!S.driveToken)return;clearTimeout(drvTimer);drvTimer=setTimeout(drvSave,2500);}
+function syncDot(s){const d=document.getElementById('sync-dot');d.className=s==='on'?'on':s==='busy'?'busy':'';}
+function openDrv(){document.getElementById('drv-ov').classList.add('on');}
+function closeDrv(){document.getElementById('drv-ov').classList.remove('on');}
+function connectDrive(){
+  const cid=document.getElementById('ds-input').value.trim();
+  if(!cid)return;
+  closeDrv();
+  if(typeof google==='undefined'||!google.accounts){toast('Einen Moment …');setTimeout(connectDrive,1500);return;}
+  const client=google.accounts.oauth2.initTokenClient({
+    client_id:cid,scope:DRV_SCOPE,
+    callback:r=>{if(r.error){toast('Fehler: '+r.error);return;}S.driveToken=r.access_token;syncDot('on');toast('Drive verbunden ✓');drvLoad();},
   });
-  client.requestAccessToken({ prompt: 'select_account' });
+  client.requestAccessToken({prompt:'select_account'});
 }
-
-async function driveLoad() {
-  if (!S.driveToken) return;
-  setSyncUI('busy');
-  try {
-    const r = await fetch(
-      `https://www.googleapis.com/drive/v3/files?q=name='${DRIVE_FILENAME}' and trashed=false&fields=files(id)`,
-      { headers: { Authorization: 'Bearer ' + S.driveToken } }
-    );
-    const d = await r.json();
-    if (d.files?.length) {
-      S.driveFid = d.files[0].id;
-      const cr = await fetch(
-        `https://www.googleapis.com/drive/v3/files/${S.driveFid}?alt=media`,
-        { headers: { Authorization: 'Bearer ' + S.driveToken } }
-      );
-      const cd = await cr.json();
-      // Merge: Drive wins for todos, merge notes
-      S.todos = cd.todos || S.todos;
-      S.notes = { ...S.notes, ...(cd.notes || {}) };
-      S.todos.forEach(t => { if (t.focus === undefined) t.focus = false; });
-      saveLocal();
-      render();
-      toast('Drive geladen');
+async function drvLoad(){
+  if(!S.driveToken)return;syncDot('busy');
+  try{
+    const r=await fetch(`https://www.googleapis.com/drive/v3/files?q=name='${DRV_FILE}' and trashed=false&fields=files(id)`,{headers:{Authorization:'Bearer '+S.driveToken}});
+    const d=await r.json();
+    if(d.files?.length){
+      S.driveFid=d.files[0].id;
+      const cr=await fetch(`https://www.googleapis.com/drive/v3/files/${S.driveFid}?alt=media`,{headers:{Authorization:'Bearer '+S.driveToken}});
+      const cd=await cr.json();
+      S.todos=cd.todos||S.todos;S.notes={...S.notes,...(cd.notes||{})};
+      S.todos.forEach(t=>{if(!t.focus)t.focus=false;});
+      save();render();toast('Drive geladen');
     }
-    setSyncUI('on');
-  } catch(e) { setSyncUI(''); }
+    syncDot('on');
+  }catch(e){syncDot('');}
 }
-
-async function driveSave() {
-  if (!S.driveToken) return;
-  setSyncUI('busy');
-  const body = JSON.stringify({ todos: S.todos, notes: S.notes });
-  try {
-    if (S.driveFid) {
-      await fetch(
-        `https://www.googleapis.com/upload/drive/v3/files/${S.driveFid}?uploadType=media`,
-        { method: 'PATCH', headers: { Authorization: 'Bearer ' + S.driveToken, 'Content-Type': 'application/json' }, body }
-      );
-    } else {
-      const m = await (await fetch('https://www.googleapis.com/drive/v3/files', {
-        method: 'POST',
-        headers: { Authorization: 'Bearer ' + S.driveToken, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: DRIVE_FILENAME })
-      })).json();
-      S.driveFid = m.id;
-      await fetch(
-        `https://www.googleapis.com/upload/drive/v3/files/${S.driveFid}?uploadType=media`,
-        { method: 'PATCH', headers: { Authorization: 'Bearer ' + S.driveToken, 'Content-Type': 'application/json' }, body }
-      );
+async function drvSave(){
+  if(!S.driveToken)return;syncDot('busy');
+  const body=JSON.stringify({todos:S.todos,notes:S.notes});
+  try{
+    if(S.driveFid){
+      await fetch(`https://www.googleapis.com/upload/drive/v3/files/${S.driveFid}?uploadType=media`,{method:'PATCH',headers:{Authorization:'Bearer '+S.driveToken,'Content-Type':'application/json'},body});
+    }else{
+      const m=await(await fetch('https://www.googleapis.com/drive/v3/files',{method:'POST',headers:{Authorization:'Bearer '+S.driveToken,'Content-Type':'application/json'},body:JSON.stringify({name:DRV_FILE})})).json();
+      S.driveFid=m.id;
+      await fetch(`https://www.googleapis.com/upload/drive/v3/files/${S.driveFid}?uploadType=media`,{method:'PATCH',headers:{Authorization:'Bearer '+S.driveToken,'Content-Type':'application/json'},body});
     }
-    setSyncUI('on');
-  } catch(e) { setSyncUI(''); }
+    syncDot('on');
+  }catch(e){syncDot('');}
 }
 
-// OAuth handled via Google Identity Services (no redirect needed)
-
-// ──────────────────────────────────────────────────
 // TABS
-// ──────────────────────────────────────────────────
-function switchTab(tab) {
-  S.tab = tab;
-  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + tab).classList.add('active');
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('panel-' + tab).classList.add('active');
+function goTab(tab){
+  S.tab=tab;
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+  document.getElementById('tab-'+tab).classList.add('on');
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.getElementById('panel-'+tab).classList.add('on');
   render();
+  if(['privat','arbeit'].includes(tab))setTimeout(()=>document.getElementById('inp-'+tab)?.focus(),60);
 }
 
-// ──────────────────────────────────────────────────
 // TODOS
-// ──────────────────────────────────────────────────
-function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
-
-function addTodo() {
-  const inp = document.getElementById('add-input');
-  const text = inp.value.trim();
-  if (!text) return;
-  S.todos.unshift({ id: uid(), text, cat: S.newCat, done: false, focus: false, createdAt: Date.now() });
-  inp.value = '';
-  saveLocal();
-  render();
-  inp.focus();
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+function addTodo(cat){
+  const inp=document.getElementById('inp-'+cat);
+  const text=inp.value.trim();if(!text)return;
+  S.todos.unshift({id:uid(),text,cat,done:false,focus:false,createdAt:Date.now()});
+  inp.value='';save();render();inp.focus();
 }
+function toggleTodo(id){const t=S.todos.find(x=>x.id===id);if(!t)return;t.done=!t.done;save();render();}
+function toggleFocus(id,e){e.stopPropagation();const t=S.todos.find(x=>x.id===id);if(!t)return;t.focus=!t.focus;save();render();toast(t.focus?'Fokus gesetzt':'Fokus entfernt');}
+function delTodo(id,e){e.stopPropagation();if(!confirm('Löschen?'))return;S.todos=S.todos.filter(x=>x.id!==id);save();render();}
 
-function toggleTodo(id) {
-  const t = S.todos.find(x => x.id === id);
-  if (!t) return;
-  t.done = !t.done;
-  saveLocal(); render();
-}
-
-function toggleFocus(id, e) {
-  e.stopPropagation();
-  const t = S.todos.find(x => x.id === id);
-  if (!t) return;
-  t.focus = !t.focus;
-  saveLocal(); render();
-  toast(t.focus ? 'In Fokus gesetzt' : 'Aus Fokus entfernt');
-}
-
-function deleteTodo(id, e) {
-  e.stopPropagation();
-  if (!confirm('Löschen?')) return;
-  S.todos = S.todos.filter(x => x.id !== id);
-  saveLocal(); render();
-}
-
-function toggleCat() {
-  S.newCat = S.newCat === 'privat' ? 'arbeit' : 'privat';
-  const btn = document.getElementById('cat-toggle');
-  btn.textContent = S.newCat === 'privat' ? 'Privat' : 'Arbeit';
-  btn.className = 'cat-toggle' + (S.newCat === 'arbeit' ? ' work' : '');
-  // keep id
-  btn.id = 'cat-toggle';
-}
-
-// SVG icons inline
-const IC = {
-  check: `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>`,
-  focus: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>`,
-  del: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
-  restore: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>`,
+const IC={
+  check:`<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>`,
+  foc:`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>`,
+  del:`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+  rst:`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>`,
 };
+function esc(s){const d=document.createElement('div');d.textContent=String(s||'');return d.innerHTML;}
 
-function esc(s) {
-  const d = document.createElement('div');
-  d.textContent = String(s || '');
-  return d.innerHTML;
-}
-
-function renderTodoList(el, items, showCat = false) {
-  if (!items.length) {
-    el.innerHTML = `<div class="empty"><div class="empty-dot"></div><div class="empty-text">Keine Einträge</div></div>`;
-    return;
-  }
-  el.innerHTML = items.map(t => `
-    <div class="td${t.done ? ' done' : ''}" onclick="toggleTodo('${t.id}')">
+function renderList(el,items,showCat=false){
+  if(!items.length){el.innerHTML=`<div class="empty"><div class="empty-ring"></div><div class="empty-txt">Keine Einträge</div></div>`;return;}
+  el.innerHTML=items.map(t=>`
+    <div class="td${t.done?' done':''}" onclick="toggleTodo('${t.id}')">
       <div class="ck">${IC.check}</div>
-      <div class="td-body">
+      <div style="flex:1;min-width:0">
         <div class="td-text">${esc(t.text)}</div>
-        ${showCat ? `<div class="td-cat">${t.cat}</div>` : ''}
+        ${showCat?`<span class="cat-pill">${t.cat}</span>`:''}
       </div>
-      <div class="td-actions">
-        ${!t.done ? `<button class="act-btn${t.focus ? ' focus-on' : ''}" onclick="toggleFocus('${t.id}',event)" title="Fokus">${IC.focus}</button>` : ''}
-        ${t.done
-          ? `<button class="act-btn" onclick="toggleTodo('${t.id}')" title="Wiederherstellen">${IC.restore}</button>`
-          : ''}
-        <button class="act-btn del" onclick="deleteTodo('${t.id}',event)" title="Löschen">${IC.del}</button>
+      <div class="td-btns">
+        ${!t.done?`<button class="tb${t.focus?' foc-on':''}" onclick="toggleFocus('${t.id}',event)">${IC.foc}</button>`:''}
+        ${t.done?`<button class="tb" onclick="toggleTodo('${t.id}')">${IC.rst}</button>`:''}
+        <button class="tb" onclick="delTodo('${t.id}',event)">${IC.del}</button>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
+function setBadge(id,n){const el=document.getElementById('ct-'+id);if(!el)return;el.textContent=n;el.classList.toggle('show',n>0);}
 
-function renderBadge(id, count) {
-  const b = document.getElementById('badge-' + id);
-  if (!b) return;
-  b.textContent = count;
-  b.style.display = count > 0 ? 'flex' : 'none';
-}
-
-// ──────────────────────────────────────────────────
 // POMODORO
-// ──────────────────────────────────────────────────
-const POMO_WORK = 25*60, POMO_SHORT = 5*60, POMO_LONG = 15*60;
-const CIRCUM = 2 * Math.PI * 68; // r=68
-
-function pomoRender() {
-  const m = Math.floor(P.sec / 60).toString().padStart(2,'0');
-  const s = (P.sec % 60).toString().padStart(2,'0');
-  document.getElementById('pomo-time').textContent = m + ':' + s;
-  document.getElementById('pomo-mode').textContent = P.isBreak ? 'PAUSE' : 'FOKUS';
-
-  const frac = P.sec / P.total;
-  document.getElementById('pomo-arc').style.strokeDashoffset = CIRCUM * (1 - frac);
-
-  // rounds
-  const rd = document.getElementById('pomo-rounds');
-  rd.innerHTML = Array.from({length: P.rounds}, (_,i) =>
-    `<div class="pr-dot${i < P.round - 1 ? ' done' : ''}"></div>`
-  ).join('');
-
-  // play/pause icon
-  const play = document.getElementById('pomo-icon-play');
-  const pause = document.getElementById('pomo-icon-pause');
-  play.style.display = P.running ? 'none' : '';
-  pause.style.display = P.running ? '' : 'none';
+const CIRC=2*Math.PI*64;
+function pomoRender(){
+  const m=Math.floor(P.sec/60).toString().padStart(2,'0'),s=(P.sec%60).toString().padStart(2,'0');
+  document.getElementById('pomo-time').textContent=m+':'+s;
+  document.getElementById('pomo-mode').textContent=P.isBreak?'PAUSE':'FOKUS';
+  document.getElementById('pomo-arc').style.strokeDashoffset=CIRC*(1-P.sec/P.total);
+  document.getElementById('pomo-rounds').innerHTML=Array.from({length:P.rounds},(_,i)=>`<div class="pr-dot${i<P.round-1?' done':''}"></div>`).join('');
+  document.getElementById('ico-play').style.display=P.running?'none':'';
+  document.getElementById('ico-pause').style.display=P.running?'':'none';
 }
-
-function pomoToggle() {
-  P.running = !P.running;
-  if (P.running) {
-    P.iv = setInterval(() => {
-      if (P.sec <= 0) { pomoNext(); return; }
-      P.sec--;
-      pomoRender();
-    }, 1000);
-  } else {
-    clearInterval(P.iv);
-  }
+function pomoToggle(){
+  P.running=!P.running;
+  if(P.running){P.iv=setInterval(()=>{if(P.sec<=0){pomoNext();return;}P.sec--;pomoRender();},1000);}
+  else clearInterval(P.iv);
+  pomoRender();
+}
+function pomoNext(){
+  clearInterval(P.iv);P.running=false;
+  if(!P.isBreak){P.isBreak=true;const lg=P.round%P.rounds===0;P.total=P.sec=lg?15*60:5*60;toast(lg?'Lange Pause!':'Kurze Pause');}
+  else{P.isBreak=false;P.round=(P.round%P.rounds)+1;P.total=P.sec=25*60;toast('Fokus-Zeit!');}
+  pomoRender();
+}
+function pomoSkip(){pomoNext();}
+function pomoCycle(d){clearInterval(P.iv);P.running=false;P.isBreak=false;P.round=Math.max(1,Math.min(P.rounds,P.round+d));P.total=P.sec=25*60;pomoRender();}
+function renderFokus(){
+  const f=S.todos.filter(t=>t.focus&&!t.done),dn=S.todos.filter(t=>t.focus&&t.done);
+  const el=document.getElementById('fokus-tasks');
+  if(!f.length&&!dn.length){el.innerHTML=`<div class="empty"><div class="empty-ring"></div><div class="empty-txt">Keine Fokus-Aufgaben<br>Aufgaben mit ◎ markieren</div></div>`;}
+  else el.innerHTML=[...f,...dn].map(t=>`<div class="ftask${t.done?' done':''}" onclick="toggleTodo('${t.id}')"><div class="ck">${IC.check}</div><div class="ftxt">${esc(t.text)}</div><div class="fcat">${t.cat}</div></div>`).join('');
   pomoRender();
 }
 
-function pomoNext() {
-  clearInterval(P.iv);
-  P.running = false;
-  if (!P.isBreak) {
-    // Work done → break
-    P.isBreak = true;
-    const isLong = P.round % P.rounds === 0;
-    P.total = P.sec = isLong ? POMO_LONG : POMO_SHORT;
-    toast(isLong ? 'Lange Pause — gut gemacht!' : 'Kurze Pause');
-  } else {
-    // Break done → next work
-    P.isBreak = false;
-    P.round = (P.round % P.rounds) + 1;
-    P.total = P.sec = POMO_WORK;
-    toast('Fokus-Zeit!');
-  }
-  pomoRender();
-}
-
-function pomoSkip() { pomoNext(); }
-
-function pomoCycle(dir) {
-  clearInterval(P.iv);
-  P.running = false;
-  P.isBreak = false;
-  P.round = Math.max(1, Math.min(P.rounds, P.round + dir));
-  P.total = P.sec = POMO_WORK;
-  pomoRender();
-}
-
-function renderFocus() {
-  const focused = S.todos.filter(t => t.focus && !t.done);
-  const done = S.todos.filter(t => t.focus && t.done);
-  const all = [...focused, ...done];
-  const el = document.getElementById('focus-tasks');
-  if (!all.length) {
-    el.innerHTML = `<div class="empty"><div class="empty-dot"></div><div class="empty-text">Keine Fokus-Aufgaben<br><span style="font-size:10px;letter-spacing:1px">Aufgaben mit ◎ markieren</span></div></div>`;
-  } else {
-    el.innerHTML = all.map(t => `
-      <div class="focus-task-row${t.done ? ' done' : ''}" onclick="toggleTodo('${t.id}')">
-        <div class="ck">${IC.check}</div>
-        <div class="ftxt">${esc(t.text)}</div>
-        <div class="fcat">${t.cat}</div>
-      </div>
-    `).join('');
-  }
-  pomoRender();
-}
-
-// ──────────────────────────────────────────────────
 // NOTES
-// ──────────────────────────────────────────────────
-function allNotes() {
-  return Object.values(S.notes).sort((a,b) => (b.updatedAt||0) - (a.updatedAt||0));
+function allNotes(){return Object.values(S.notes).sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));}
+function createNote(title=''){const id=uid();S.notes[id]={id,title:title||'Neue Notiz',content:'',updatedAt:Date.now()};save();openNote(id,!title);}
+function delNote(){if(!activeNote)return;if(!confirm('Notiz löschen?'))return;delete S.notes[activeNote];save();closeEd();renderNotes();}
+function openNote(id,selTitle=false){
+  const n=S.notes[id];if(!n)return;
+  activeNote=id;
+  document.getElementById('ed-title').value=n.title;
+  document.getElementById('ed-ta').value=n.content||'';
+  prevMode=false;
+  document.getElementById('ed-prev').classList.remove('on');
+  document.getElementById('ed-ta').style.display='';
+  document.getElementById('tb-prev').classList.remove('on');
+  document.getElementById('ed').classList.add('open');
+  updBL();
+  if(selTitle)setTimeout(()=>document.getElementById('ed-title').select(),100);
 }
-
-function createNote(title = '') {
-  const id = uid();
-  S.notes[id] = { id, title: title || 'Neue Notiz', content: '', updatedAt: Date.now() };
-  saveLocal();
-  openNote(id, !title);
+function closeEd(){flushNote();document.getElementById('ed').classList.remove('open');activeNote=null;renderNotes();}
+function flushNote(){
+  if(!activeNote)return;
+  const n=S.notes[activeNote];if(!n)return;
+  n.title=document.getElementById('ed-title').value.trim()||'Unbenannte Notiz';
+  n.content=document.getElementById('ed-ta').value;
+  n.updatedAt=Date.now();save();
 }
-
-function deleteCurrentNote() {
-  if (!activeNoteId) return;
-  if (!confirm('Notiz löschen?')) return;
-  delete S.notes[activeNoteId];
-  saveLocal();
-  closeEditor();
-  renderNoteList();
-}
-
-function openNote(id, selectTitle = false) {
-  const note = S.notes[id];
-  if (!note) return;
-  activeNoteId = id;
-  document.getElementById('ed-title').value = note.title;
-  document.getElementById('ed-textarea').value = note.content || '';
-  previewMode = false;
-  document.getElementById('ed-preview').classList.remove('visible');
-  document.getElementById('ed-textarea').style.display = '';
-  document.getElementById('tb-preview').classList.remove('preview-on');
-  document.getElementById('note-editor').classList.add('open');
-  updateBacklinks();
-  if (selectTitle) {
-    setTimeout(() => document.getElementById('ed-title').select(), 100);
-  }
-}
-
-function closeEditor() {
-  flushNoteContent();
-  document.getElementById('note-editor').classList.remove('open');
-  activeNoteId = null;
-  renderNoteList();
-}
-
-function flushNoteContent() {
-  if (!activeNoteId) return;
-  const n = S.notes[activeNoteId];
-  if (!n) return;
-  n.title = document.getElementById('ed-title').value.trim() || 'Unbenannte Notiz';
-  n.content = document.getElementById('ed-textarea').value;
-  n.updatedAt = Date.now();
-  saveLocal();
-}
-
-function onTitleInput(v) {
-  if (!activeNoteId) return;
-  S.notes[activeNoteId].title = v;
-  S.notes[activeNoteId].updatedAt = Date.now();
-  saveLocal();
-}
-
-function renderNoteList() {
-  const el = document.getElementById('note-list-view');
-  const notes = allNotes();
-  if (!notes.length) {
-    el.innerHTML = `<div class="empty"><div class="empty-dot"></div><div class="empty-text">Keine Notizen</div></div>`;
-    return;
-  }
-  el.innerHTML = notes.map(n => {
-    const preview = (n.content||'').replace(/#{1,6}\s/g,'').replace(/\*+/g,'').replace(/\[\[([^\]]+)\]\]/g,'$1').slice(0,80);
-    const date = n.updatedAt ? fmtDate(n.updatedAt) : '';
-    return `<div class="note-row" onclick="openNote('${n.id}')">
-      <div class="note-row-title">${esc(n.title)}</div>
-      ${preview ? `<div class="note-row-preview">${esc(preview)}</div>` : ''}
-      <div class="note-row-meta">${date}</div>
-    </div>`;
+function onTitleInput(v){if(!activeNote)return;S.notes[activeNote].title=v;S.notes[activeNote].updatedAt=Date.now();save();}
+function renderNotes(){
+  const el=document.getElementById('note-list'),notes=allNotes();
+  if(!notes.length){el.innerHTML=`<div class="empty"><div class="empty-ring"></div><div class="empty-txt">Keine Notizen</div></div>`;return;}
+  el.innerHTML=notes.map(n=>{
+    const prv=(n.content||'').replace(/#{1,6}\s/g,'').replace(/\*+/g,'').replace(/\[\[([^\]]+)\]\]/g,'$1').slice(0,80);
+    return `<div class="note-row" onclick="openNote('${n.id}')"><div class="note-ttl">${esc(n.title)}</div>${prv?`<div class="note-prv">${esc(prv)}</div>`:''}<div class="note-dt">${n.updatedAt?fmtDate(n.updatedAt):''}</div></div>`;
   }).join('');
 }
 
-// ──────────────────────────────────────────────────
-// MARKDOWN + WIKI LINKS
-// ──────────────────────────────────────────────────
-function parseMarkdown(text) {
-  // Wiki links
-  text = text.replace(/\[\[([^\]]+)\]\]/g, (_, title) => {
-    const ex = Object.values(S.notes).find(n => n.title.toLowerCase() === title.toLowerCase());
-    const cls = ex ? 'wiki-link' : 'wiki-link new';
-    const id = ex ? ex.id : '';
-    return `<a class="${cls}" data-nid="${id}" data-ntitle="${esc(title)}" onclick="wikiClick(this)">${esc(title)}</a>`;
-  });
-  text = text.replace(/^### (.+)$/gm, '<h3>$1</h3>');
-  text = text.replace(/^## (.+)$/gm, '<h2>$1</h2>');
-  text = text.replace(/^# (.+)$/gm, '<h1>$1</h1>');
-  text = text.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
-  text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
-  text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-  text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
-  text = text.replace(/^---$/gm, '<hr>');
-  text = text.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
-  text = text.replace(/^[-*] (.+)$/gm, '<li>$1</li>');
-  text = text.replace(/(<li>.*<\/li>\n?)+/gs, s => '<ul>' + s + '</ul>');
-  text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
-  const lines = text.split('\n');
-  const out = []; let inP = false;
-  for (const line of lines) {
-    if (/^<(h[1-6]|ul|ol|pre|blockquote|hr|li)/.test(line) || line === '') {
-      if (inP) { out.push('</p>'); inP = false; }
-      out.push(line);
-    } else {
-      if (!inP) { out.push('<p>'); inP = true; }
-      out.push(line);
-    }
-  }
-  if (inP) out.push('</p>');
-  return out.join('\n');
+// MARKDOWN
+function parseMD(text){
+  text=text.replace(/\[\[([^\]]+)\]\]/g,(_,t)=>{const ex=Object.values(S.notes).find(n=>n.title.toLowerCase()===t.toLowerCase());return `<a class="wl${ex?'':' new'}" data-nid="${ex?ex.id:''}" data-ntitle="${esc(t)}" onclick="wlClick(this)">${esc(t)}</a>`;});
+  text=text.replace(/^### (.+)$/gm,'<h3>$1</h3>').replace(/^## (.+)$/gm,'<h2>$1</h2>').replace(/^# (.+)$/gm,'<h1>$1</h1>');
+  text=text.replace(/```([\s\S]*?)```/g,'<pre><code>$1</code></pre>').replace(/`([^`]+)`/g,'<code>$1</code>');
+  text=text.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>');
+  text=text.replace(/^---$/gm,'<hr>').replace(/^> (.+)$/gm,'<blockquote>$1</blockquote>');
+  text=text.replace(/^[-*] (.+)$/gm,'<li>$1</li>').replace(/(<li>.*<\/li>\n?)+/gs,s=>'<ul>'+s+'</ul>');
+  text=text.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank">$1</a>');
+  const lines=text.split('\n'),out=[];let inP=false;
+  for(const l of lines){if(/^<(h[1-6]|ul|ol|pre|blockquote|hr|li)/.test(l)||l===''){if(inP){out.push('</p>');inP=false;}out.push(l);}else{if(!inP){out.push('<p>');inP=true;}out.push(l);}}
+  if(inP)out.push('</p>');return out.join('\n');
+}
+function togglePrev(){
+  prevMode=!prevMode;
+  const prev=document.getElementById('ed-prev'),ta=document.getElementById('ed-ta'),btn=document.getElementById('tb-prev');
+  if(prevMode){flushNote();prev.innerHTML=parseMD(ta.value);prev.classList.add('on');ta.style.display='none';btn.classList.add('on');}
+  else{prev.classList.remove('on');ta.style.display='';btn.classList.remove('on');ta.focus();}
+}
+function wlClick(el){const id=el.dataset.nid,title=el.dataset.ntitle;if(id&&S.notes[id])openNote(id);else createNote(title);}
+function updBL(){
+  if(!activeNote)return;
+  const cur=(S.notes[activeNote]?.title||'').toLowerCase();
+  const linked=Object.values(S.notes).filter(n=>n.id!==activeNote&&[...(n.content||'').matchAll(/\[\[([^\]]+)\]\]/g)].some(m=>m[1].toLowerCase()===cur));
+  const wrap=document.getElementById('ed-bl'),list=document.getElementById('ed-bl-list');
+  if(!linked.length){wrap.classList.remove('on');return;}
+  wrap.classList.add('on');
+  list.innerHTML=linked.map(n=>`<div class="bl-row" onclick="openNote('${n.id}')">${esc(n.title)}</div>`).join('');
 }
 
-function togglePreview() {
-  previewMode = !previewMode;
-  const prev = document.getElementById('ed-preview');
-  const txa  = document.getElementById('ed-textarea');
-  const btn  = document.getElementById('tb-preview');
-  if (previewMode) {
-    flushNoteContent();
-    prev.innerHTML = parseMarkdown(txa.value);
-    prev.classList.add('visible');
-    txa.style.display = 'none';
-    btn.classList.add('preview-on');
-  } else {
-    prev.classList.remove('visible');
-    txa.style.display = '';
-    btn.classList.remove('preview-on');
-    txa.focus();
+// WIKI AUTOCOMPLETE
+const ta=()=>document.getElementById('ed-ta');
+function checkWiki(){
+  const el=ta(),v=el.value,pos=el.selectionStart,before=v.slice(0,pos);
+  const closed=before.match(/\[\[([^\]\n]+)\]\]$/);
+  if(closed){const t=closed[1].trim();if(t)ensureNote(t);closeAC();return;}
+  const open=before.match(/\[\[([^\]\n]*)$/);
+  if(open)showAC(open[1]);else closeAC();
+}
+function ensureNote(title){
+  if(!Object.values(S.notes).some(n=>n.title.toLowerCase()===title.toLowerCase())){
+    const id=uid();S.notes[id]={id,title,content:'',updatedAt:Date.now()};save();toast('«'+title+'» erstellt');
   }
 }
-
-function wikiClick(el) {
-  const id = el.dataset.nid;
-  const title = el.dataset.ntitle;
-  if (id && S.notes[id]) {
-    openNote(id);
-  } else {
-    createNote(title);
-  }
+function showAC(q){
+  acActive=true;acSel=0;
+  const notes=allNotes().filter(n=>n.id!==activeNote&&n.title.toLowerCase().includes(q.toLowerCase())).slice(0,8);
+  const popup=document.getElementById('ac'),list=document.getElementById('ac-list');
+  list.innerHTML=notes.map((n,i)=>`<div class="ac-row${i===0?' sel':''}" onclick="acSel_('${n.id}')"><span class="ac-ico">◈</span>${esc(n.title)}</div>`).join('');
+  if(!list.children.length){closeAC();return;}
+  const r=ta().getBoundingClientRect();
+  popup.style.left=Math.max(10,r.left+10)+'px';
+  popup.style.top=Math.min(r.bottom-140,window.innerHeight-200)+'px';
+  popup.classList.add('on');
 }
-
-function updateBacklinks() {
-  if (!activeNoteId) return;
-  const curTitle = (S.notes[activeNoteId]?.title || '').toLowerCase();
-  const linked = Object.values(S.notes).filter(n => {
-    if (n.id === activeNoteId) return false;
-    return [...(n.content||'').matchAll(/\[\[([^\]]+)\]\]/g)].some(m => m[1].toLowerCase() === curTitle);
-  });
-  const wrap = document.getElementById('ed-backlinks');
-  const list = document.getElementById('ed-bl-list');
-  if (!linked.length) { wrap.classList.remove('has-links'); return; }
-  wrap.classList.add('has-links');
-  list.innerHTML = linked.map(n =>
-    `<div class="bl-row" onclick="openNote('${n.id}')">${esc(n.title)}</div>`
-  ).join('');
+function closeAC(){acActive=false;document.getElementById('ac').classList.remove('on');}
+function acSel_(id){const n=S.notes[id];if(!n)return;replaceWiki(n.title);}
+function replaceWiki(title){
+  const el=ta(),pos=el.selectionStart,before=el.value.slice(0,pos);
+  const m=before.match(/\[\[([^\]\n]*)$/);if(!m)return closeAC();
+  const start=before.length-m[0].length,after=el.value.slice(pos).replace(/^\]\]/,'');
+  el.value=el.value.slice(0,start)+'[['+title+']]'+after;
+  const np=start+title.length+4;el.setSelectionRange(np,np);el.focus();
+  closeAC();ensureNote(title);flushNote();
 }
+function wrap(b,a){const el=ta(),s=el.selectionStart,e=el.selectionEnd,sel=el.value.slice(s,e);el.setRangeText(b+sel+a,s,e,'end');el.focus();flushNote();}
+function insLine(p){const el=ta(),s=el.selectionStart,ls=el.value.lastIndexOf('\n',s-1)+1;el.setRangeText(p,ls,ls,'start');el.focus();flushNote();}
+function insWiki(){const el=ta(),s=el.selectionStart,e=el.selectionEnd,sel=el.value.slice(s,e);el.setRangeText('[['+sel+']]',s,e,'end');el.focus();showAC('');}
 
-// ──────────────────────────────────────────────────
-// WIKI AUTOCOMPLETE + AUTO-CREATE
-// ──────────────────────────────────────────────────
-let acActive = false, acSel = 0;
-
-const ta = () => document.getElementById('ed-textarea');
-
-// Called on every keystroke in the textarea
-function checkWikiLink() {
-  const el = ta();
-  const v = el.value, pos = el.selectionStart;
-  const before = v.slice(0, pos);
-
-  // Detect just-completed [[title]] — auto-create note, close popup
-  const closed = before.match(/\[\[([^\]\n]+)\]\]$/);
-  if (closed) {
-    const title = closed[1].trim();
-    if (title) ensureNoteExists(title);
-    closeAC();
-    return;
-  }
-
-  // Still typing inside [[...
-  const open = before.match(/\[\[([^\]\n]*)$/);
-  if (open) { showAC(open[1]); }
-  else { closeAC(); }
-}
-
-// Creates a note with given title if it doesn't already exist
-function ensureNoteExists(title) {
-  const existing = Object.values(S.notes).find(n => n.title.toLowerCase() === title.toLowerCase());
-  if (!existing) {
-    const id = uid();
-    S.notes[id] = { id, title, content: '', updatedAt: Date.now() };
-    saveLocal();
-    toast('Notiz «' + title + '» erstellt');
-  }
-}
-
-function showAC(q) {
-  acActive = true; acSel = 0;
-  const notes = allNotes().filter(n => n.id !== activeNoteId && n.title.toLowerCase().includes(q.toLowerCase())).slice(0, 8);
-  const popup = document.getElementById('ac-popup');
-  const list = document.getElementById('ac-list');
-
-  // Only existing notes — creation is automatic on ]]
-  list.innerHTML = notes.map((n,i) =>
-    `<div class="ac-opt${i===0?' sel':''}" onclick="acSelect('${n.id}')"><span class="ac-icon">◈</span>${esc(n.title)}</div>`
-  ).join('');
-
-  if (!list.children.length) { closeAC(); return; }
-
-  const r = ta().getBoundingClientRect();
-  popup.style.left = Math.max(10, r.left + 10) + 'px';
-  popup.style.top = Math.min(r.bottom - 140, window.innerHeight - 220) + 'px';
-  popup.classList.add('show');
-}
-
-function closeAC() { acActive = false; document.getElementById('ac-popup').classList.remove('show'); }
-
-function acSelect(id) {
-  const note = S.notes[id];
-  if (!note) return;
-  replaceOpenWiki(note.title);
-}
-
-// Replace open [[query with [[chosen title]]
-function replaceOpenWiki(title) {
-  const el = ta();
-  const pos = el.selectionStart;
-  const before = el.value.slice(0, pos);
-  const m = before.match(/\[\[([^\]\n]*)$/);
-  if (!m) return closeAC();
-  const start = before.length - m[0].length;
-  const after = el.value.slice(pos).replace(/^\]\]/, '');
-  el.value = el.value.slice(0, start) + '[[' + title + ']]' + after;
-  const np = start + title.length + 4;
-  el.setSelectionRange(np, np);
-  el.focus();
-  closeAC();
-  ensureNoteExists(title);
-  flushNoteContent();
-}
-
-// Editor toolbar helpers
-function wrap(before, after) {
-  const el = ta();
-  const s = el.selectionStart, e = el.selectionEnd;
-  const sel = el.value.slice(s, e);
-  el.setRangeText(before + sel + after, s, e, 'end');
-  el.focus();
-  flushNoteContent();
-}
-function insertLine(prefix) {
-  const el = ta();
-  const s = el.selectionStart;
-  const ls = el.value.lastIndexOf('\n', s-1) + 1;
-  el.setRangeText(prefix, ls, ls, 'start');
-  el.focus();
-  flushNoteContent();
-}
-function insertWiki() {
-  const el = ta();
-  const s = el.selectionStart, e = el.selectionEnd;
-  const sel = el.value.slice(s, e);
-  el.setRangeText('[[' + sel + ']]', s, e, 'end');
-  el.focus();
-  showAC('');
-}
-
-// ──────────────────────────────────────────────────
 // RENDER
-// ──────────────────────────────────────────────────
-function render() {
-  const privat = S.todos.filter(t => !t.done && t.cat === 'privat');
-  const arbeit = S.todos.filter(t => !t.done && t.cat === 'arbeit');
-  const done = S.todos.filter(t => t.done);
-
-  renderBadge('privat', privat.length);
-  renderBadge('arbeit', arbeit.length);
-
-  if (S.tab === 'privat') renderTodoList(document.getElementById('list-privat'), privat);
-  if (S.tab === 'arbeit') renderTodoList(document.getElementById('list-arbeit'), arbeit);
-  if (S.tab === 'done') renderTodoList(document.getElementById('list-done'), done, true);
-  if (S.tab === 'focus') renderFocus();
-  if (S.tab === 'notes') renderNoteList();
+function render(){
+  const priv=S.todos.filter(t=>!t.done&&t.cat==='privat');
+  const arb=S.todos.filter(t=>!t.done&&t.cat==='arbeit');
+  const done=S.todos.filter(t=>t.done);
+  setBadge('privat',priv.length);setBadge('arbeit',arb.length);
+  if(S.tab==='privat')renderList(document.getElementById('list-privat'),priv);
+  if(S.tab==='arbeit')renderList(document.getElementById('list-arbeit'),arb);
+  if(S.tab==='done')renderList(document.getElementById('list-done'),done,true);
+  if(S.tab==='fokus')renderFokus();
+  if(S.tab==='notizen')renderNotes();
 }
 
-// ──────────────────────────────────────────────────
 // MISC
-// ──────────────────────────────────────────────────
-function handleNew() {
-  if (S.tab === 'notes') { createNote(); return; }
-  document.getElementById('add-input').focus();
+function handleNew(){
+  if(S.tab==='notizen'){createNote();return;}
+  if(S.tab==='privat'||S.tab==='arbeit')document.getElementById('inp-'+S.tab)?.focus();
 }
+function toast(msg,ms=2200){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('on');clearTimeout(toast._t);toast._t=setTimeout(()=>el.classList.remove('on'),ms);}
+function fmtDate(ts){const d=new Date(ts),now=new Date();if(d.toDateString()===now.toDateString())return d.toLocaleTimeString('de',{hour:'2-digit',minute:'2-digit'});return d.toLocaleDateString('de',{day:'2-digit',month:'2-digit'});}
 
-function toast(msg, ms = 2000) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(toast._t);
-  toast._t = setTimeout(() => el.classList.remove('show'), ms);
-}
-
-function fmtDate(ts) {
-  const d = new Date(ts), now = new Date();
-  if (d.toDateString() === now.toDateString())
-    return d.toLocaleTimeString('de', { hour:'2-digit', minute:'2-digit' });
-  return d.toLocaleDateString('de', { day:'2-digit', month:'2-digit' });
-}
-
-// Keyboard shortcuts
-document.addEventListener('keydown', e => {
-  if (document.getElementById('note-editor').classList.contains('open')) {
-    if (e.key === 'Escape') { closeEditor(); return; }
-    return;
-  }
-  if (['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
-  if (e.key === 'n' || e.key === 'N') handleNew();
+// EVENTS
+document.addEventListener('keydown',e=>{if(document.getElementById('ed').classList.contains('open')){if(e.key==='Escape')closeEd();return;}if(['INPUT','TEXTAREA'].includes(e.target.tagName))return;if(e.key==='n'||e.key==='N')handleNew();});
+document.getElementById('ed-ta').addEventListener('input',()=>{flushNote();checkWiki();});
+document.getElementById('ed-ta').addEventListener('keydown',e=>{
+  if(!acActive)return;
+  const items=document.querySelectorAll('.ac-row');
+  if(e.key==='ArrowDown'){e.preventDefault();acSel=Math.min(acSel+1,items.length-1);items.forEach((el,i)=>el.classList.toggle('sel',i===acSel));}
+  else if(e.key==='ArrowUp'){e.preventDefault();acSel=Math.max(acSel-1,0);items.forEach((el,i)=>el.classList.toggle('sel',i===acSel));}
+  else if(e.key==='Enter'||e.key==='Tab'){e.preventDefault();const s=document.querySelector('.ac-row.sel');if(s)s.click();}
+  else if(e.key==='Escape')closeAC();
 });
+document.getElementById('ed-ta').addEventListener('blur',()=>setTimeout(closeAC,200));
+document.getElementById('ed-title').addEventListener('blur',flushNote);
 
-// Editor textarea events
-document.getElementById('ed-textarea').addEventListener('input', () => {
-  flushNoteContent();
-  checkWikiLink();
-});
-document.getElementById('ed-textarea').addEventListener('keydown', e => {
-  if (!acActive) return;
-  const items = document.querySelectorAll('.ac-opt');
-  if (e.key === 'ArrowDown') { e.preventDefault(); acSel = Math.min(acSel+1, items.length-1); items.forEach((el,i) => el.classList.toggle('sel', i===acSel)); }
-  else if (e.key === 'ArrowUp') { e.preventDefault(); acSel = Math.max(acSel-1, 0); items.forEach((el,i) => el.classList.toggle('sel', i===acSel)); }
-  else if (e.key === 'Enter' || e.key === 'Tab') {
-    e.preventDefault();
-    const sel = document.querySelector('.ac-opt.sel');
-    if (sel) sel.click();
-  }
-  else if (e.key === 'Escape') closeAC();
-});
-document.getElementById('ed-textarea').addEventListener('blur', () => setTimeout(closeAC, 200));
-document.getElementById('ed-title').addEventListener('blur', flushNoteContent);
-
-// ──────────────────────────────────────────────────
 // INIT
-// ──────────────────────────────────────────────────
-loadLocal();
-render();
-pomoRender();
-
-// Pre-fill drive sheet
-document.getElementById('ds-input').value = CLIENT_ID;
+load();render();pomoRender();
+document.getElementById('ds-input').value=CLIENT_ID;
 </script>
 </body>
 </html>
