@@ -914,6 +914,9 @@ textarea { resize: none; }
   <div id="drive-sheet">
     <div class="ds-handle"></div>
     <div class="ds-title">Google Drive Sync</div>
+    <div class="ds-label" style="margin-top:0">Autorisierte Weiterleitungs-URI</div>
+    <div id="ds-uri" style="font-family:var(--mono);font-size:10px;color:var(--w30);background:var(--w04);border:1px solid var(--brd2);border-radius:6px;padding:8px 10px;margin-bottom:14px;word-break:break-all;user-select:all;-webkit-user-select:all"></div>
+    <div style="font-size:11px;color:var(--w30);margin-bottom:16px;line-height:1.5">↑ Genau diese URI in der <a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="color:var(--red)">Google Cloud Console</a> unter „Autorisierte Weiterleitungs-URIs" eintragen.</div>
     <div class="ds-label">Google API Client ID</div>
     <input id="ds-input" type="text" placeholder="xxxxxxxxx.apps.googleusercontent.com"
            value="368244766898-da615t6bjr0q8lr0ujvqa362dd3c999q.apps.googleusercontent.com">
@@ -998,36 +1001,42 @@ function setSyncUI(state) {
 
 function openDriveSheet() {
   document.getElementById('drive-overlay').classList.add('show');
+  // Show exact redirect URI so user can copy it into Google Cloud Console
+  const uriEl = document.getElementById('ds-uri');
+  if (uriEl) {
+    let uri = location.origin + location.pathname;
+    if (!uri.endsWith('/')) uri += '/';
+    uriEl.textContent = uri;
+  }
 }
 function closeDriveSheet() {
   document.getElementById('drive-overlay').classList.remove('show');
+}
+
+function getRedirectUri() {
+  // Build exact URI — no trailing slash issues
+  let uri = location.origin + location.pathname;
+  if (!uri.endsWith('/')) uri += '/';
+  return uri;
 }
 
 function connectDrive() {
   const cid = document.getElementById('ds-input').value.trim();
   if (!cid) return;
   closeDriveSheet();
+  const redirectUri = getRedirectUri();
   const params = new URLSearchParams({
     client_id: cid,
-    redirect_uri: location.origin + location.pathname,
+    redirect_uri: redirectUri,
     response_type: 'token',
     scope: DRIVE_SCOPES,
     prompt: 'select_account',
+    include_granted_scopes: 'true',
   });
-  const popup = window.open('https://accounts.google.com/o/oauth2/auth?' + params, '_blank', 'width=480,height=580');
-  const iv = setInterval(() => {
-    try {
-      const h = new URLSearchParams(popup.location.hash.slice(1));
-      if (h.get('access_token')) {
-        S.driveToken = h.get('access_token');
-        popup.close();
-        clearInterval(iv);
-        toast('Drive verbunden');
-        driveLoad();
-      }
-    } catch(e) {}
-    if (popup.closed) clearInterval(iv);
-  }, 400);
+  // Store cid so we can restore after redirect
+  localStorage.setItem('drive_cid_pending', cid);
+  // Use full-page redirect — more reliable than popup on mobile
+  location.href = 'https://accounts.google.com/o/oauth2/auth?' + params;
 }
 
 async function driveLoad() {
