@@ -2,579 +2,1563 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="description" content="Nothing To-Do — Focus. Flow. Done.">
-<link rel="manifest" href="manifest.json">
-<title>Nothing To-Do</title>
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>Nothing · Notes & Tasks</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
-
-<!-- ┌──────────────────────────────────────────┐
-     │  GOOGLE CLIENT ID HIER EINTRAGEN:        │
-     └──────────────────────────────────────────┘ -->
-<meta name="google-client-id" content="368244766898-da615t6bjr0q8lr0ujvqa362dd3c999q.apps.googleusercontent.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 
 <style>
-:root{
-  --bg:#000;--sf:#080808;--cd:#0c0c0c;
-  --red:#D71921;--rs:rgba(215,25,33,.12);--rg:rgba(215,25,33,.25);--rd:rgba(215,25,33,.45);
-  --grn:#2ECC40;--ylw:#FFDC00;
-  --w:#fff;--w90:rgba(255,255,255,.9);--w70:rgba(255,255,255,.7);--w50:rgba(255,255,255,.5);
-  --w30:rgba(255,255,255,.3);--w15:rgba(255,255,255,.15);--w08:rgba(255,255,255,.08);--w04:rgba(255,255,255,.04);
-  --mono:'Space Mono','Courier New',monospace;--sans:'DM Sans',-apple-system,'Segoe UI',sans-serif;
-  --st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);--r:3px;
+/* ══════════════════════════════════════
+   DESIGN TOKENS — Nothing OS Aesthetic
+══════════════════════════════════════ */
+:root {
+  --bg:       #000000;
+  --bg-1:     #0a0a0a;
+  --bg-2:     #111111;
+  --bg-3:     #1a1a1a;
+  --border:   #222222;
+  --border-2: #333333;
+  --text:     #ffffff;
+  --text-2:   #888888;
+  --text-3:   #444444;
+  --red:      #ff2d2d;
+  --red-dim:  #3d0000;
+  --mono:     'Space Mono', monospace;
+  --sans:     'DM Sans', sans-serif;
+  --radius:   2px;
+  --sidebar:  280px;
 }
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;width:100%;background:var(--bg);color:var(--w);font-family:var(--sans);overflow:hidden;-webkit-font-smoothing:antialiased}
 
-/* BOOT */
-#boot{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s,visibility .5s}
-#boot.x{opacity:0;visibility:hidden;pointer-events:none}
-.boot-r{width:44px;height:44px;border:1.5px solid var(--w15);border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.boot-t{margin-top:22px;font-family:var(--mono);font-size:10px;letter-spacing:6px;text-transform:uppercase;color:var(--w30)}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* LOGIN */
-#login{position:fixed;inset:0;z-index:8000;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;transition:opacity .4s,visibility .4s}
-#login.x{opacity:0;visibility:hidden;pointer-events:none}
-.l-dot{width:12px;height:12px;border-radius:50%;background:var(--red);margin-bottom:28px;box-shadow:0 0 20px var(--rg)}
-.l-title{font-family:var(--mono);font-size:16px;font-weight:700;letter-spacing:4px;text-transform:uppercase;margin-bottom:6px}
-.l-sub{font-size:13px;color:var(--w30);text-align:center;max-width:300px;line-height:1.7;margin-bottom:36px}
-.l-btn{padding:13px 36px;border:1px solid var(--red);border-radius:var(--r);background:transparent;color:var(--w);font-family:var(--mono);font-size:11px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:10px}
-.l-btn:hover{background:var(--red);box-shadow:0 0 28px var(--rg)}
-.l-btn svg{flex-shrink:0}
-.l-off{margin-top:16px;background:none;border:1px solid var(--w08);color:var(--w15);padding:9px 24px;border-radius:var(--r);font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s}
-.l-off:hover{border-color:var(--w30);color:var(--w30)}
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
 
-/* APP */
-#app{display:none;flex-direction:column;height:100%;width:100%;max-width:540px;margin:0 auto;padding-top:var(--st);padding-bottom:var(--sb)}
-#app.on{display:flex}
+/* ══════════════════════════════════════
+   LAYOUT
+══════════════════════════════════════ */
+#app {
+  display: grid;
+  grid-template-columns: var(--sidebar) 1fr;
+  grid-template-rows: 48px 1fr;
+  height: 100dvh;
+}
 
-/* HEADER */
-.hd{flex-shrink:0;padding:14px 20px 0;display:flex;align-items:center;justify-content:space-between}
-.hd-l{display:flex;align-items:center;gap:10px}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--w15);transition:all .3s}
-.dot.sync{background:var(--red);animation:pulse 1s ease-in-out infinite}
-.dot.ok{background:var(--grn);box-shadow:0 0 8px rgba(46,204,64,.3)}
-.dot.off{background:var(--ylw);box-shadow:0 0 8px rgba(255,220,0,.3)}
-.dot.err{background:var(--red);box-shadow:0 0 8px var(--rg)}
-@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
-.hd-t{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase}
-.hd-r{display:flex;gap:2px}
-.ib{width:36px;height:36px;border-radius:50%;border:none;background:transparent;color:var(--w30);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s}
-.ib:hover{color:var(--w70);background:var(--w04)}
-.ib.spin svg{animation:spin .7s linear infinite}
+/* ══════════════════════════════════════
+   TOPBAR
+══════════════════════════════════════ */
+#topbar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+  position: relative;
+  z-index: 100;
+}
 
-/* SYNC BAR */
-.syncb{flex-shrink:0;height:24px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--w08);transition:color .3s}
-.syncb.act{color:var(--rd)}.syncb.ok{color:rgba(46,204,64,.3)}
+#topbar .logo {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  user-select: none;
+  flex-shrink: 0;
+}
+#topbar .logo span { color: var(--red); }
 
-/* TABS */
-.tabs{flex-shrink:0;display:flex;padding:0 20px;border-bottom:1px solid var(--w04)}
-.tab{flex:1;padding:13px 0 11px;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-align:center;color:var(--w15);background:none;border:none;cursor:pointer;position:relative;transition:color .2s}
-.tab:hover{color:var(--w30)}.tab.on{color:var(--w90)}
-.tab::after{content:'';position:absolute;bottom:-1px;left:15%;right:15%;height:1px;background:var(--red);transform:scaleX(0);transition:transform .3s cubic-bezier(.4,0,.2,1)}
-.tab.on::after{transform:scaleX(1)}
-.tab .c{display:inline-block;margin-left:3px;font-family:var(--sans);font-size:8px;font-weight:400;color:inherit;opacity:.3}
+#topbar .sep {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  flex-shrink: 0;
+}
 
-/* LIST */
-.ls{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 20px 110px;-webkit-overflow-scrolling:touch}
-.ls::-webkit-scrollbar{width:2px}.ls::-webkit-scrollbar-thumb{background:var(--w04)}
+#tab-bar {
+  display: flex;
+  gap: 2px;
+  flex: 1;
+}
 
-/* EMPTY */
-.ey{display:flex;flex-direction:column;align-items:center;justify-content:center;height:50vh;text-align:center;animation:up .4s ease}
-@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.ey-i{width:52px;height:52px;border-radius:50%;border:1px dashed var(--w08);display:flex;align-items:center;justify-content:center;margin-bottom:14px}
-.ey-i svg{color:var(--w04)}
-.ey-t{font-family:var(--mono);font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--w08);margin-bottom:4px}
-.ey-s{font-size:11px;color:var(--w04);max-width:220px}
+.tab-btn {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  transition: color 0.15s, background 0.15s;
+}
+.tab-btn:hover { color: var(--text-2); background: var(--bg-2); }
+.tab-btn.active { color: var(--text); background: var(--bg-3); }
+.tab-btn .count {
+  display: inline-block;
+  background: var(--red);
+  color: #fff;
+  font-size: 9px;
+  border-radius: 2px;
+  padding: 1px 4px;
+  margin-left: 5px;
+  vertical-align: middle;
+}
 
-/* TODO ITEM */
-.td{display:flex;align-items:flex-start;gap:11px;padding:13px 0;border-bottom:1px solid var(--w04);animation:up .25s ease;transition:opacity .25s,transform .25s}
-.td.out{opacity:0;transform:translateX(40px)}
-.ck{flex-shrink:0;width:20px;height:20px;margin-top:1px;border-radius:50%;border:1.5px solid var(--w15);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
-.ck:hover{border-color:var(--red);box-shadow:0 0 10px var(--rs)}
-.ck svg{opacity:0;transition:opacity .15s;color:var(--red)}.ck:hover svg{opacity:1}
-.td-b{flex:1;min-width:0}
-.td-t{font-size:14px;font-weight:400;line-height:1.5;color:var(--w70);word-wrap:break-word}
-.td-m{margin-top:2px;font-size:9px;color:var(--w04);font-family:var(--mono);letter-spacing:.5px}
-.td-a{flex-shrink:0;display:flex;gap:0}.td-a .ib{width:28px;height:28px}.td-a svg{width:12px;height:12px}
+#topbar .actions {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
 
-/* Focus icon on todo items */
-.td-a .ib.foc{color:var(--rd)}
-.td-a .ib.foc.active{color:var(--red)}
+.icon-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.icon-btn:hover { color: var(--text); border-color: var(--border-2); }
+.icon-btn.red { border-color: var(--red); color: var(--red); }
 
-.td.dn .td-t{text-decoration:line-through;color:var(--w08)}
-.td.dn .ck{border-color:var(--w04);background:var(--w04)}.td.dn .ck svg{opacity:.15}
-.td.dn .td-m .bg{color:var(--rd)}
-.cr{display:flex;justify-content:center;padding:12px 0 4px}
-.cr-b{padding:6px 16px;border:1px solid var(--w04);border-radius:var(--r);background:transparent;font-family:var(--mono);font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--w04);cursor:pointer;transition:all .2s}
-.cr-b:hover{border-color:var(--rd);color:var(--rd)}
+/* ══════════════════════════════════════
+   SIDEBAR — NOTE LIST
+══════════════════════════════════════ */
+#sidebar {
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 
-/* ═══ POMODORO TIMER ═══ */
-.pomo{display:flex;flex-direction:column;align-items:center;padding:24px 0 20px;border-bottom:1px solid var(--w04);animation:up .4s ease}
-.pomo-ring{position:relative;width:160px;height:160px;margin-bottom:16px}
-.pomo-svg{width:160px;height:160px;transform:rotate(-90deg)}
-.pomo-bg{fill:none;stroke:var(--w04);stroke-width:2}
-.pomo-prog{fill:none;stroke:var(--red);stroke-width:2;stroke-linecap:round;transition:stroke-dashoffset 1s linear}
-.pomo-time{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.pomo-digits{font-family:var(--mono);font-size:36px;font-weight:700;letter-spacing:2px;color:var(--w90)}
-.pomo-label{font-family:var(--mono);font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--w15);margin-top:4px}
-.pomo-ctrl{display:flex;gap:12px;align-items:center}
-.pomo-btn{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--w15);background:transparent;color:var(--w50);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s}
-.pomo-btn:hover{border-color:var(--w30);color:var(--w)}
-.pomo-btn.primary{border-color:var(--red);color:var(--w);background:var(--rs)}
-.pomo-btn.primary:hover{background:var(--red)}
-.pomo-btn.primary.running{border-color:var(--w30);background:var(--w04);color:var(--w50)}
-.pomo-btn.primary.running:hover{border-color:var(--w50)}
-.pomo-count{display:flex;gap:6px;margin-top:14px;align-items:center}
-.pomo-dot-done{width:6px;height:6px;border-radius:50%;background:var(--red)}
-.pomo-dot-pending{width:6px;height:6px;border-radius:50%;border:1px solid var(--w15)}
-.pomo-info{font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--w08);text-transform:uppercase;margin-left:8px}
+#sidebar-header {
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#sidebar-header .label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  flex: 1;
+}
 
-/* Focus task in focus view */
-.fk-task{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--w04)}
-.fk-task .ck{width:18px;height:18px}
-.fk-task .fk-title{flex:1;font-size:13px;color:var(--w50)}
-.fk-task .fk-cat{font-family:var(--mono);font-size:8px;letter-spacing:1px;color:var(--w08);text-transform:uppercase}
-.fk-task.current .fk-title{color:var(--w90)}
-.fk-task.current{border-left:2px solid var(--red);padding-left:10px;margin-left:-2px}
+#note-search {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 13px;
+  padding: 7px 12px;
+  margin: 10px 12px 8px;
+  border-radius: var(--radius);
+  outline: none;
+  width: calc(100% - 24px);
+  transition: border-color 0.15s;
+}
+#note-search::placeholder { color: var(--text-3); }
+#note-search:focus { border-color: var(--border-2); }
 
-/* FAB */
-.fab{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);width:50px;height:50px;border-radius:50%;border:none;cursor:pointer;background:var(--red);color:var(--w);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(215,25,33,.3);transition:all .2s;z-index:100}
-.fab:hover{transform:translateX(-50%) scale(1.08);box-shadow:0 6px 24px rgba(215,25,33,.4)}
-.fab:active{transform:translateX(-50%) scale(.93)}
-.fab.h{transform:translateX(-50%) scale(0);opacity:0;pointer-events:none}
+#note-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+#note-list::-webkit-scrollbar { width: 3px; }
+#note-list::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 2px; }
 
-/* MODAL */
-.ov{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.88);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;align-items:flex-end;justify-content:center;opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s}
-.ov.o{opacity:1;visibility:visible}
-.mo{width:100%;max-width:540px;background:var(--sf);border:1px solid var(--w08);border-bottom:none;border-radius:14px 14px 0 0;padding:18px 20px calc(18px + var(--sb));transform:translateY(100%);transition:transform .32s cubic-bezier(.32,.72,0,1)}
-.ov.o .mo{transform:translateY(0)}
-@media(min-width:540px){.mo{border-radius:10px;border-bottom:1px solid var(--w08)}.ov{align-items:center}}
-.mo-bar{width:28px;height:3px;border-radius:2px;background:var(--w15);margin:0 auto 16px}
-.mo-l{font-family:var(--mono);font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--w30);margin-bottom:14px}
-.mo-in{width:100%;padding:11px 0;background:transparent;border:none;border-bottom:1px solid var(--w08);color:var(--w);font-size:15px;font-family:var(--sans);outline:none;transition:border-color .2s}
-.mo-in:focus{border-color:var(--red)}.mo-in::placeholder{color:var(--w08)}
-.chr{display:flex;gap:8px;margin-top:12px}
-.ch{flex:1;padding:9px;border:1px solid var(--w08);border-radius:var(--r);background:transparent;color:var(--w15);font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;text-align:center;cursor:pointer;transition:all .2s}
-.ch.on{border-color:var(--red);color:var(--w);background:var(--rs)}.ch:hover:not(.on){border-color:var(--w15)}
-.mo-a{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
-.mb{padding:9px 18px;border:none;border-radius:var(--r);font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s}
-.mb.n{background:transparent;color:var(--w15)}.mb.n:hover{color:var(--w30)}
-.mb.y{background:var(--red);color:var(--w)}.mb.y:hover{background:#e52029}.mb.y:disabled{opacity:.2;cursor:not-allowed}
+.note-item {
+  padding: 9px 14px;
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: background 0.1s, border-color 0.1s;
+  position: relative;
+}
+.note-item:hover { background: var(--bg-2); }
+.note-item.active {
+  background: var(--bg-2);
+  border-left-color: var(--red);
+}
+.note-item.active .note-item-title { color: var(--text); }
 
-/* TOAST */
-.tt{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(14px);padding:9px 20px;border-radius:var(--r);background:var(--cd);border:1px solid var(--w08);font-size:12px;color:var(--w50);z-index:300;opacity:0;pointer-events:none;transition:all .3s;white-space:nowrap;max-width:88%}
-.tt.s{opacity:1;transform:translateX(-50%) translateY(0)}
+.note-item-title {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+.note-item-preview {
+  font-size: 11px;
+  color: var(--text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.note-item-date {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text-3);
+  margin-top: 3px;
+}
+.note-item .del-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-3);
+  cursor: pointer;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+  padding: 4px;
+  line-height: 1;
+}
+.note-item:hover .del-btn { opacity: 1; }
+.note-item .del-btn:hover { color: var(--red); }
 
-/* INSTALL */
-.ip{position:fixed;bottom:0;left:0;right:0;padding:12px 20px calc(12px + var(--sb));background:var(--sf);border-top:1px solid var(--w08);display:flex;align-items:center;justify-content:space-between;z-index:90;transform:translateY(100%);transition:transform .3s}
-.ip.s{transform:translateY(0)}
-.ip-t{font-size:11px;color:var(--w15)}
-.ip-b{padding:6px 14px;border:1px solid var(--red);border-radius:var(--r);background:transparent;color:var(--red);cursor:pointer;font-family:var(--mono);font-size:8px;letter-spacing:2px;text-transform:uppercase;transition:all .2s}
-.ip-b:hover{background:var(--red);color:var(--w)}
-.ip-x{background:none;border:none;color:var(--w04);cursor:pointer;padding:6px;font-size:15px}
+/* ══════════════════════════════════════
+   MAIN CONTENT AREA
+══════════════════════════════════════ */
+#main {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ══════════════════════════════════════
+   TABS: TASKS vs NOTES
+══════════════════════════════════════ */
+/* Todo-Panel */
+#todo-panel {
+  display: none;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+#todo-panel.visible { display: flex; }
+
+/* Notes-Panel */
+#notes-panel {
+  display: none;
+  height: 100%;
+  overflow: hidden;
+}
+#notes-panel.visible { display: flex; }
+
+/* ══════════════════════════════════════
+   TODO PANEL
+══════════════════════════════════════ */
+#todo-list-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+#todo-list-area::-webkit-scrollbar { width: 3px; }
+#todo-list-area::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 2px; }
+
+.todo-section-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  padding: 16px 0 8px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+.todo-section-label:first-child { padding-top: 0; }
+
+.todo-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.todo-item:hover { opacity: 0.85; }
+
+.todo-check {
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius);
+  flex-shrink: 0;
+  margin-top: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, border-color 0.15s;
+}
+.todo-item.done .todo-check {
+  background: var(--red);
+  border-color: var(--red);
+}
+.todo-item.done .todo-check::after { content: '✕'; font-size: 9px; color: #fff; }
+.todo-item.done .todo-text { text-decoration: line-through; color: var(--text-3); }
+
+.todo-text {
+  flex: 1;
+  font-size: 14px;
+  color: var(--text-2);
+  line-height: 1.4;
+  word-break: break-word;
+}
+.todo-cat {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--text-3);
+  border: 1px solid var(--border);
+  padding: 2px 6px;
+  border-radius: 1px;
+  flex-shrink: 0;
+}
+.todo-item .del-todo {
+  background: none;
+  border: none;
+  color: var(--text-3);
+  cursor: pointer;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+  padding: 2px;
+  flex-shrink: 0;
+}
+.todo-item:hover .del-todo { opacity: 1; }
+.todo-item .del-todo:hover { color: var(--red); }
+
+/* New Todo Bar */
+#new-todo-bar {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: var(--bg);
+}
+#new-todo-input {
+  flex: 1;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  padding: 9px 12px;
+  border-radius: var(--radius);
+  outline: none;
+  transition: border-color 0.15s;
+}
+#new-todo-input::placeholder { color: var(--text-3); }
+#new-todo-input:focus { border-color: var(--border-2); }
+
+#cat-select {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 9px 10px;
+  border-radius: var(--radius);
+  outline: none;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+}
+
+/* ══════════════════════════════════════
+   NOTES EDITOR
+══════════════════════════════════════ */
+#notes-panel {
+  display: none;
+  height: 100%;
+  flex-direction: row;
+}
+#notes-panel.visible { display: flex; }
+
+/* Empty state */
+#note-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--text-3);
+}
+#note-empty .icon { font-size: 40px; opacity: 0.3; }
+#note-empty .hint { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; }
+#note-empty .sub { font-size: 12px; color: var(--text-3); }
+
+/* Editor area */
+#editor-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+#editor-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.tool-btn {
+  background: none;
+  border: 1px solid transparent;
+  color: var(--text-3);
+  cursor: pointer;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.12s, background 0.12s;
+}
+.tool-btn:hover { color: var(--text); background: var(--bg-2); }
+.tool-sep { width: 1px; height: 18px; background: var(--border); margin: 0 2px; }
+
+#note-title-input {
+  background: none;
+  border: none;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 16px;
+  font-weight: 700;
+  padding: 14px 16px 10px;
+  outline: none;
+  width: 100%;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
+}
+#note-title-input::placeholder { color: var(--text-3); }
+
+/* Edit / Preview split */
+#editor-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+  overflow: hidden;
+  position: relative;
+}
+#editor-body.split { grid-template-columns: 1fr 1fr; }
+#editor-body.split #md-preview { display: block; }
+#editor-body.split .editor-gutter { border-right: 1px solid var(--border); }
+
+/* Textarea */
+#md-editor {
+  resize: none;
+  background: var(--bg);
+  border: none;
+  color: var(--text-2);
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.75;
+  padding: 16px;
+  outline: none;
+  overflow-y: auto;
+  tab-size: 2;
+}
+#md-editor::-webkit-scrollbar { width: 3px; }
+#md-editor::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 2px; }
+
+/* Wiki link highlight in textarea — overlay approach */
+.editor-gutter {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+#md-editor { flex: 1; }
+
+/* Preview */
+#md-preview {
+  display: none;
+  overflow-y: auto;
+  padding: 16px 20px;
+  color: var(--text-2);
+  font-size: 14px;
+  line-height: 1.75;
+}
+#md-preview::-webkit-scrollbar { width: 3px; }
+#md-preview::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 2px; }
+
+/* Markdown render styles */
+#md-preview h1, #md-preview h2, #md-preview h3 {
+  font-family: var(--mono);
+  color: var(--text);
+  margin: 1.2em 0 0.4em;
+}
+#md-preview h1 { font-size: 18px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+#md-preview h2 { font-size: 15px; }
+#md-preview h3 { font-size: 13px; color: var(--text-2); }
+#md-preview p { margin: 0.5em 0; }
+#md-preview strong { color: var(--text); font-weight: 600; }
+#md-preview em { font-style: italic; color: var(--text-2); }
+#md-preview code {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  padding: 1px 5px;
+  border-radius: 2px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--red);
+}
+#md-preview pre {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  padding: 12px;
+  border-radius: 2px;
+  overflow-x: auto;
+  margin: 0.8em 0;
+}
+#md-preview pre code { background: none; border: none; padding: 0; font-size: 12px; color: var(--text-2); }
+#md-preview ul, #md-preview ol { padding-left: 20px; margin: 0.5em 0; }
+#md-preview li { margin: 0.25em 0; }
+#md-preview blockquote {
+  border-left: 2px solid var(--red);
+  padding-left: 12px;
+  color: var(--text-3);
+  margin: 0.8em 0;
+}
+#md-preview hr { border: none; border-top: 1px solid var(--border); margin: 1.5em 0; }
+#md-preview a { color: var(--text-2); text-decoration: underline; text-underline-offset: 2px; }
+
+/* Wiki link in preview */
+.wiki-link {
+  color: var(--red) !important;
+  text-decoration: none !important;
+  font-family: var(--mono);
+  font-size: 0.9em;
+  border-bottom: 1px dotted var(--red);
+  cursor: pointer;
+  transition: opacity 0.12s;
+}
+.wiki-link:hover { opacity: 0.75; }
+.wiki-link.new-note { color: var(--text-3) !important; border-bottom-color: var(--text-3); }
+
+/* ══════════════════════════════════════
+   AUTOCOMPLETE POPUP
+══════════════════════════════════════ */
+#autocomplete {
+  position: fixed;
+  background: var(--bg-1);
+  border: 1px solid var(--border-2);
+  border-radius: 3px;
+  z-index: 999;
+  min-width: 200px;
+  max-width: 320px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.8);
+  overflow: hidden;
+  display: none;
+}
+#autocomplete.visible { display: block; }
+.ac-header {
+  padding: 6px 12px 4px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  border-bottom: 1px solid var(--border);
+}
+.ac-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.1s;
+}
+.ac-item:hover, .ac-item.selected { background: var(--bg-3); color: var(--text); }
+.ac-item .ac-icon { color: var(--red); font-size: 11px; opacity: 0.7; }
+.ac-item.create-new { color: var(--text-3); }
+.ac-item.create-new .ac-icon { color: var(--text-3); }
+.ac-item.create-new:hover { color: var(--text-2); }
+
+/* ══════════════════════════════════════
+   DONE PANEL & BACKLINKS
+══════════════════════════════════════ */
+#backlinks-panel {
+  width: 220px;
+  border-left: 1px solid var(--border);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+#backlinks-panel.visible { display: flex; }
+#backlinks-panel .bl-header {
+  padding: 10px 12px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  border-bottom: 1px solid var(--border);
+}
+#backlinks-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+.bl-item {
+  padding: 7px 12px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text-3);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.1s, background 0.1s;
+}
+.bl-item:hover { color: var(--text-2); background: var(--bg-2); }
+.bl-item .bl-arrow { color: var(--red); font-size: 10px; }
+
+/* ══════════════════════════════════════
+   SYNC STATUS
+══════════════════════════════════════ */
+#sync-status {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 4px;
+}
+.sync-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--text-3);
+  flex-shrink: 0;
+}
+.sync-dot.ok { background: #2d9e47; }
+.sync-dot.busy { background: var(--red); animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+/* ══════════════════════════════════════
+   DRIVE SETUP MODAL
+══════════════════════════════════════ */
+#modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.88);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  display: none;
+}
+#modal-overlay.visible { display: flex; }
+#modal-box {
+  background: var(--bg-1);
+  border: 1px solid var(--border-2);
+  padding: 28px;
+  max-width: 420px;
+  width: 90%;
+  border-radius: 2px;
+}
+#modal-box h2 {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+#modal-box p { font-size: 13px; color: var(--text-2); margin-bottom: 16px; line-height: 1.6; }
+#modal-box label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  display: block;
+  margin-bottom: 6px;
+}
+#modal-box input {
+  width: 100%;
+  background: var(--bg-2);
+  border: 1px solid var(--border-2);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 10px;
+  border-radius: var(--radius);
+  outline: none;
+  margin-bottom: 16px;
+}
+.modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
+.btn-primary {
+  background: var(--red);
+  border: none;
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 10px 18px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.btn-primary:hover { opacity: 0.85; }
+.btn-secondary {
+  background: none;
+  border: 1px solid var(--border-2);
+  color: var(--text-2);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 10px 18px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.btn-secondary:hover { border-color: var(--text-2); }
+
+/* ══════════════════════════════════════
+   RESPONSIVENESS
+══════════════════════════════════════ */
+@media (max-width: 680px) {
+  :root { --sidebar: 0px; }
+  #sidebar { display: none; }
+  #sidebar.mobile-visible {
+    display: flex;
+    position: fixed;
+    left: 0; top: 48px; bottom: 0;
+    width: 280px;
+    z-index: 200;
+    background: var(--bg-1);
+    border-right: 1px solid var(--border-2);
+  }
+  #app { grid-template-columns: 1fr; }
+  #editor-body.split { grid-template-columns: 1fr; }
+  #editor-body.split #md-preview { display: none; }
+}
+
+/* ══════════════════════════════════════
+   MISC
+══════════════════════════════════════ */
+::selection { background: var(--red); color: #fff; }
 </style>
 </head>
 <body>
 
-<div id="boot"><div class="boot-r"></div><div class="boot-t">Nothing</div></div>
-
-<div id="login" class="x">
-  <div class="l-dot"></div>
-  <div class="l-title">To-Do</div>
-  <div class="l-sub">Melde dich mit Google an. Deine Aufgaben werden automatisch in Google Drive gespeichert und auf allen Geräten synchronisiert.</div>
-  <button class="l-btn" id="loginBtn">
-    <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"/><path fill="#fff" opacity=".7" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#fff" opacity=".4" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18A10.96 10.96 0 0 0 1 12c0 1.77.42 3.45 1.18 4.93l3.66-2.84z"/><path fill="#fff" opacity=".2" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-    Mit Google anmelden
-  </button>
-  <button class="l-off" id="offBtn">Offline-Modus</button>
-</div>
-
 <div id="app">
-  <header class="hd">
-    <div class="hd-l"><div class="dot" id="dot"></div><span class="hd-t">To-Do</span></div>
-    <div class="hd-r">
-      <button class="ib" id="syncBtn" title="Synchronisieren"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M21.5 2v6h-6M2.5 22v-6h6"/><path d="M2.5 11.5a10 10 0 0 1 16.5-5.6L21.5 8M21.5 12.5a10 10 0 0 1-16.5 5.6L2.5 16"/></svg></button>
-      <button class="ib" id="outBtn" title="Abmelden"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
+
+  <!-- TOPBAR -->
+  <div id="topbar">
+    <div class="logo">N<span>·</span>OS</div>
+    <div class="sep"></div>
+    <div id="tab-bar">
+      <button class="tab-btn active" id="tab-privat" onclick="switchTab('privat')">
+        Privat <span class="count" id="count-privat">0</span>
+      </button>
+      <button class="tab-btn" id="tab-arbeit" onclick="switchTab('arbeit')">
+        Arbeit <span class="count" id="count-arbeit">0</span>
+      </button>
+      <button class="tab-btn" id="tab-done" onclick="switchTab('done')">Done</button>
+      <button class="tab-btn" id="tab-notes" onclick="switchTab('notes')">
+        Notizen <span class="count" id="count-notes">0</span>
+      </button>
     </div>
-  </header>
-  <div class="syncb" id="syncb">—</div>
-  <nav class="tabs">
-    <button class="tab on" data-t="private">Privat<span class="c" id="nP"></span></button>
-    <button class="tab" data-t="work">Arbeit<span class="c" id="nW"></span></button>
-    <button class="tab" data-t="focus">Fokus<span class="c" id="nF"></span></button>
-    <button class="tab" data-t="done">Done<span class="c" id="nD"></span></button>
-  </nav>
-  <main class="ls" id="ls"></main>
-</div>
+    <div id="sync-status">
+      <div class="sync-dot" id="sync-dot"></div>
+      <span id="sync-label">lokal</span>
+    </div>
+    <div class="actions">
+      <button class="icon-btn" title="Google Drive verbinden" onclick="showDriveModal()">☁</button>
+      <button class="icon-btn" title="Neue Notiz / Aufgabe (N)" onclick="handleNew()">+</button>
+    </div>
+  </div>
 
-<button class="fab h" id="fab"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+  <!-- SIDEBAR (Note List) -->
+  <div id="sidebar">
+    <div id="sidebar-header">
+      <span class="label">Notizen</span>
+      <button class="icon-btn" style="width:22px;height:22px;font-size:12px" onclick="createNewNote()" title="Neue Notiz">+</button>
+    </div>
+    <input type="text" id="note-search" placeholder="Suchen …" oninput="filterNotes(this.value)">
+    <div id="note-list"></div>
+  </div>
 
-<div class="ov" id="ov">
-  <div class="mo">
-    <div class="mo-bar"></div>
-    <div class="mo-l">Neue Aufgabe</div>
-    <input class="mo-in" id="inp" type="text" placeholder="Was ist zu tun?" autocomplete="off" maxlength="200">
-    <div class="chr"><button class="ch on" data-c="private">Privat</button><button class="ch" data-c="work">Arbeit</button></div>
-    <div class="mo-a"><button class="mb n" id="mN">Abbrechen</button><button class="mb y" id="mY" disabled>Hinzufügen</button></div>
+  <!-- MAIN -->
+  <div id="main">
+
+    <!-- TODO PANELS -->
+    <div id="todo-panel" class="visible">
+      <div id="todo-list-area"></div>
+      <div id="new-todo-bar">
+        <input id="new-todo-input" type="text" placeholder="Neue Aufgabe …"
+               onkeydown="if(event.key==='Enter') addTodo()">
+        <select id="cat-select">
+          <option value="privat">Privat</option>
+          <option value="arbeit">Arbeit</option>
+        </select>
+        <button class="icon-btn" onclick="addTodo()" title="Hinzufügen">↵</button>
+      </div>
+    </div>
+
+    <!-- NOTES PANEL -->
+    <div id="notes-panel">
+      <!-- Empty state -->
+      <div id="note-empty">
+        <div class="icon">◈</div>
+        <div class="hint">Keine Notiz ausgewählt</div>
+        <div class="sub">Wähle eine Notiz links oder erstelle eine neue</div>
+      </div>
+
+      <!-- Editor -->
+      <div id="editor-area" style="display:none">
+        <div id="editor-toolbar">
+          <button class="tool-btn" onclick="wrapSelection('**','**')" title="Fett">B</button>
+          <button class="tool-btn" style="font-style:italic" onclick="wrapSelection('*','*')" title="Kursiv">I</button>
+          <button class="tool-btn" onclick="wrapSelection('`','`')" title="Code">`</button>
+          <div class="tool-sep"></div>
+          <button class="tool-btn" onclick="insertLine('## ')" title="Überschrift H2">H2</button>
+          <button class="tool-btn" onclick="insertLine('### ')" title="Überschrift H3">H3</button>
+          <div class="tool-sep"></div>
+          <button class="tool-btn" onclick="insertLine('- ')" title="Liste">—</button>
+          <button class="tool-btn" onclick="insertLine('> ')" title="Zitat">»</button>
+          <div class="tool-sep"></div>
+          <button class="tool-btn" onclick="insertWikiLink()" title="Notiz verlinken">[[</button>
+          <div class="tool-sep"></div>
+          <button class="tool-btn" id="split-btn" onclick="toggleSplit()" title="Vorschau">⊞</button>
+          <div class="tool-sep"></div>
+          <button class="tool-btn" id="bl-btn" onclick="toggleBacklinks()" title="Rückverlinkungen">←</button>
+        </div>
+        <input type="text" id="note-title-input" placeholder="Titel der Notiz …"
+               oninput="onTitleChange(this.value)">
+        <div id="editor-body">
+          <div class="editor-gutter">
+            <textarea id="md-editor" spellcheck="true" placeholder="Schreibe hier …&#10;&#10;Verlinke Notizen mit [[Notizname]]&#10;Die Notiz wird automatisch angelegt."></textarea>
+          </div>
+          <div id="md-preview"></div>
+        </div>
+      </div>
+
+      <!-- Backlinks -->
+      <div id="backlinks-panel">
+        <div class="bl-header">Rückverlinkungen</div>
+        <div id="backlinks-list"></div>
+      </div>
+    </div>
+
   </div>
 </div>
 
-<div class="tt" id="tt"></div>
+<!-- AUTOCOMPLETE POPUP -->
+<div id="autocomplete">
+  <div class="ac-header">Notiz auswählen oder erstellen</div>
+  <div id="ac-items"></div>
+</div>
 
-<div class="ip" id="ip">
-  <span class="ip-t">Als App installieren</span>
-  <div style="display:flex;gap:6px;align-items:center">
-    <button class="ip-b" id="ipG">OK</button><button class="ip-x" id="ipX">×</button>
+<!-- DRIVE MODAL -->
+<div id="modal-overlay">
+  <div id="modal-box">
+    <h2>Google Drive Sync</h2>
+    <p>Trage deine Google API Client ID ein, um Notizen und Aufgaben automatisch in deinem Drive zu speichern.</p>
+    <label for="client-id-input">Google API Client ID</label>
+    <input id="client-id-input" type="text" placeholder="xxxxxxxx.apps.googleusercontent.com">
+    <p style="font-size:11px;color:var(--text-3);margin-top:-10px;margin-bottom:16px">
+      → <a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="color:var(--text-3)">console.cloud.google.com</a> · Neues OAuth-Credential erstellen · Typ: Web-Anwendung · Redirect: dieser Ursprung
+    </p>
+    <div class="modal-btns">
+      <button class="btn-secondary" onclick="closeModal()">Abbrechen</button>
+      <button class="btn-primary" onclick="saveClientId()">Verbinden</button>
+    </div>
   </div>
 </div>
 
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 <script>
-const CID=document.querySelector('meta[name="google-client-id"]')?.content||'';
-const SCOPES='https://www.googleapis.com/auth/drive.file';
-const FN='nothing_todos.json';
-const LK='ntd_v4';
-const TK='ntd_token';
-const DB=1500;
+/* ════════════════════════════════════════════════
+   NOTHING TO-DO + NOTES
+   v3.0 — Wiki-Links, Markdown-Editor, Drive Sync
+════════════════════════════════════════════════ */
 
-// Pomodoro settings (seconds)
-const POMO_WORK=25*60;
-const POMO_SHORT=5*60;
-const POMO_LONG=15*60;
-const POMO_ROUNDS=4;
-
-let S={todos:[],tab:'private',token:null,fid:null,online:false,saving:false};
-// Pomodoro state
-let P={running:false,paused:false,seconds:POMO_WORK,total:POMO_WORK,round:1,isBreak:false,interval:null};
-
-let st=null,tc=null;
-
-const $=id=>document.getElementById(id);
-const esc=s=>{const d=document.createElement('div');d.textContent=s;return d.innerHTML};
-const uid=()=>crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2,9);
-
-// SVG Icons
-const IC={
-  focus:'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
-  check:'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>',
-  restore:'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>',
-  trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
-  play:'<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21"/></svg>',
-  pause:'<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="3" width="4" height="18" rx="1"/><rect x="15" y="3" width="4" height="18" rx="1"/></svg>',
-  reset:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>',
-  skip:'<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 15,12 5,21"/><rect x="16" y="3" width="3" height="18" rx="1"/></svg>',
+// ─── STATE ─────────────────────────────────────
+let state = {
+  todos: [],          // {id, text, cat, done, createdAt}
+  notes: {},          // {[id]: {id, title, content, updatedAt}}
+  activeTab: 'privat',
+  activeNoteId: null,
+  splitView: false,
+  backlinksVisible: false,
+  driveClientId: null,
+  driveToken: null,
+  driveFileId: null,   // ID der data.json im Drive
 };
 
-// ═══ BOOT ═══
-window.addEventListener('load',()=>{
-  loadL();
-  const t=localStorage.getItem(TK);
-  if(t){S.token=t;S.online=true;boot();driveLoad();}
-  else setTimeout(()=>{$('boot').classList.add('x');$('login').classList.remove('x');},400);
-});
+// ─── PERSISTENCE ─────────────────────────────
+const LS_KEY = 'nothing_v3';
 
-// ═══ AUTH ═══
-$('loginBtn').onclick=()=>{
-  if(!CID||CID.includes('DEINE_CLIENT_ID')){toast('⚠ Client ID in index.html eintragen');return;}
-  mkTC(r=>{if(r.error){toast('Anmeldung fehlgeschlagen');return;}S.token=r.access_token;S.online=true;localStorage.setItem(TK,S.token);$('login').classList.add('x');boot();driveLoad();});
-  tc.requestAccessToken();
-};
-$('offBtn').onclick=()=>{S.online=false;$('login').classList.add('x');boot();setD('off');setSB('','Offline — Daten lokal');};
-$('outBtn').onclick=()=>{if(S.token)try{google.accounts.oauth2.revoke(S.token)}catch{};S.token=null;S.fid=null;S.online=false;localStorage.removeItem(TK);$('app').classList.remove('on');$('fab').classList.add('h');$('login').classList.remove('x');setD('');};
-$('syncBtn').onclick=()=>{if(S.online)driveLoad();else toast('Nicht verbunden');};
-
-function mkTC(cb){if(tc)return;tc=google.accounts.oauth2.initTokenClient({client_id:CID,scope:SCOPES,callback:cb});}
-async function reAuth(){return new Promise((ok,no)=>{mkTC(r=>{if(r.error){no(r.error);return;}S.token=r.access_token;localStorage.setItem(TK,S.token);ok();});tc.requestAccessToken({prompt:''});})}
-function aH(){return{'Authorization':'Bearer '+S.token};}
-
-// ═══ DRIVE ═══
-async function driveLoad(){
-  if(!S.token)return;setD('sync');setSB('act','Synchronisiere...');$('syncBtn').classList.add('spin');
-  try{
-    let r=await gF(`https://www.googleapis.com/drive/v3/files?q=name='${FN}'+and+trashed=false&fields=files(id,modifiedTime)&spaces=drive`);
-    let d=await r.json();
-    if(d.files&&d.files.length>0){S.fid=d.files[0].id;let dl=await gF(`https://www.googleapis.com/drive/v3/files/${S.fid}?alt=media`);let rm=await dl.json();if(Array.isArray(rm)){S.todos=merge(rm,S.todos);saveL();render();await driveW();}}
-    else{await driveC();}
-    setD('ok');setSB('ok','Sync OK — '+tNow());
-  }catch(e){console.error(e);setD('err');setSB('','Sync fehlgeschlagen');toast('Sync-Fehler');}
-  finally{$('syncBtn').classList.remove('spin');}
-}
-async function driveW(){
-  if(!S.token||S.saving)return;S.saving=true;
-  try{if(S.fid)await gF(`https://www.googleapis.com/upload/drive/v3/files/${S.fid}?uploadType=media`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(S.todos)});else await driveC();setD('ok');}
-  catch(e){console.error(e);setD('err');}finally{S.saving=false;}
-}
-async function driveC(){
-  const m={name:FN,mimeType:'application/json'},f=new FormData();
-  f.append('metadata',new Blob([JSON.stringify(m)],{type:'application/json'}));
-  f.append('file',new Blob([JSON.stringify(S.todos)],{type:'application/json'}));
-  const r=await gF('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',{method:'POST',body:f});
-  S.fid=(await r.json()).id;
-}
-async function gF(url,o={}){
-  let h={...aH(),...(o.headers||{})};let r=await fetch(url,{...o,headers:h});
-  if(r.status===401){try{await reAuth();h={...aH(),...(o.headers||{})};r=await fetch(url,{...o,headers:h});}catch{S.token=null;S.online=false;localStorage.removeItem(TK);$('app').classList.remove('on');$('fab').classList.add('h');$('login').classList.remove('x');toast('Sitzung abgelaufen');throw new Error('Auth expired');}}
-  if(!r.ok)throw new Error('HTTP '+r.status);return r;
-}
-function autoS(){saveL();if(!S.online)return;clearTimeout(st);setD('sync');st=setTimeout(async()=>{await driveW();setSB('ok','Gespeichert — '+tNow());},DB);}
-function merge(a,b){const m=new Map();a.forEach(t=>m.set(t.id,t));b.forEach(t=>{const e=m.get(t.id);if(!e){m.set(t.id,t);return;}const eT=Math.max(e.completedAt||0,e.updatedAt||0,e.createdAt||0);const sT=Math.max(t.completedAt||0,t.updatedAt||0,t.createdAt||0);if(sT>eT)m.set(t.id,t);});return[...m.values()];}
-
-// ═══ LOCAL ═══
-function loadL(){try{S.todos=JSON.parse(localStorage.getItem(LK)||'[]');}catch{S.todos=[];}}
-function saveL(){try{localStorage.setItem(LK,JSON.stringify(S.todos));}catch{}}
-
-// ═══ RENDER ═══
-function boot(){$('boot').classList.add('x');$('app').classList.add('on');$('fab').classList.remove('h');render();ev();}
-function render(){list();cnt();$('fab').classList.toggle('h',S.tab==='done'||S.tab==='focus');}
-
-function cnt(){
-  const p=S.todos.filter(t=>t.cat==='private'&&!t.done).length;
-  const w=S.todos.filter(t=>t.cat==='work'&&!t.done).length;
-  const f=S.todos.filter(t=>t.focus&&!t.done).length;
-  const d=S.todos.filter(t=>t.done).length;
-  $('nP').textContent=p||'';$('nW').textContent=w||'';$('nF').textContent=f||'';$('nD').textContent=d||'';
+function saveLocal() {
+  localStorage.setItem(LS_KEY, JSON.stringify({ todos: state.todos, notes: state.notes }));
+  if (state.driveToken) scheduleDriveSync();
 }
 
-function filt(){
-  if(S.tab==='done')return S.todos.filter(t=>t.done).sort((a,b)=>(b.completedAt||0)-(a.completedAt||0));
-  if(S.tab==='focus')return S.todos.filter(t=>t.focus&&!t.done).sort((a,b)=>b.createdAt-a.createdAt);
-  return S.todos.filter(t=>t.cat===S.tab&&!t.done).sort((a,b)=>b.createdAt-a.createdAt);
+function loadLocal() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return;
+    const d = JSON.parse(raw);
+    state.todos = d.todos || [];
+    state.notes = d.notes || {};
+  } catch(e) {}
 }
 
-function list(){
-  const el=$('ls'),its=filt();
+// ─── GOOGLE DRIVE ────────────────────────────
+const DRIVE_FILE = 'nothing-notes-data.json';
+const SCOPES = 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file';
+let driveTimer = null;
 
-  // FOCUS VIEW — Pomodoro + focused tasks
-  if(S.tab==='focus'){
-    let h=renderPomo();
-    if(!its.length){
-      h+=`<div class="ey" style="height:30vh"><div class="ey-i"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div><div class="ey-t">Kein Fokus gesetzt</div><div class="ey-s">Setze Aufgaben in den Fokus über das ◎ Icon in Privat oder Arbeit</div></div>`;
-    } else {
-      its.forEach(t=>{
-        const cl=t.cat==='private'?'Privat':'Arbeit';
-        h+=`<div class="fk-task" data-id="${t.id}">
-          <button class="ck" data-a="do" data-id="${t.id}">${IC.check}</button>
-          <span class="fk-title">${esc(t.title)}</span>
-          <span class="fk-cat">${cl}</span>
-          <button class="ib foc active" data-a="unfocus" data-id="${t.id}" title="Aus Fokus entfernen">${IC.focus}</button>
-        </div>`;
-      });
+function scheduleDriveSync() {
+  clearTimeout(driveTimer);
+  driveTimer = setTimeout(driveSave, 2000);
+}
+
+function setSyncStatus(state_) {
+  const dot = document.getElementById('sync-dot');
+  const label = document.getElementById('sync-label');
+  dot.className = 'sync-dot' + (state_ === 'ok' ? ' ok' : state_ === 'busy' ? ' busy' : '');
+  label.textContent = state_ === 'ok' ? 'drive ✓' : state_ === 'busy' ? 'speichern …' : 'lokal';
+}
+
+function showDriveModal() {
+  document.getElementById('client-id-input').value = state.driveClientId || '';
+  document.getElementById('modal-overlay').classList.add('visible');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('visible');
+}
+function saveClientId() {
+  const id = document.getElementById('client-id-input').value.trim();
+  if (!id) return;
+  state.driveClientId = id;
+  localStorage.setItem('drive_client_id', id);
+  closeModal();
+  driveAuth();
+}
+
+function driveAuth() {
+  if (!state.driveClientId) return;
+  const params = new URLSearchParams({
+    client_id: state.driveClientId,
+    redirect_uri: location.origin + location.pathname,
+    response_type: 'token',
+    scope: SCOPES,
+    prompt: 'select_account',
+  });
+  const popup = window.open('https://accounts.google.com/o/oauth2/auth?' + params, '_blank', 'width=500,height=600');
+  const iv = setInterval(() => {
+    try {
+      const url = popup.location.href;
+      if (url.includes('access_token')) {
+        const hash = new URLSearchParams(popup.location.hash.slice(1));
+        state.driveToken = hash.get('access_token');
+        popup.close();
+        clearInterval(iv);
+        driveLoad();
+      }
+    } catch(e) {}
+    if (popup.closed) clearInterval(iv);
+  }, 300);
+}
+
+async function driveLoad() {
+  setSyncStatus('busy');
+  try {
+    // Find existing file
+    const res = await fetch(
+      `https://www.googleapis.com/drive/v3/files?q=name='${DRIVE_FILE}' and trashed=false&fields=files(id,name)`,
+      { headers: { Authorization: 'Bearer ' + state.driveToken } }
+    );
+    const data = await res.json();
+    if (data.files && data.files.length > 0) {
+      state.driveFileId = data.files[0].id;
+      const content = await fetch(
+        `https://www.googleapis.com/drive/v3/files/${state.driveFileId}?alt=media`,
+        { headers: { Authorization: 'Bearer ' + state.driveToken } }
+      );
+      const json = await content.json();
+      state.todos = json.todos || [];
+      state.notes = json.notes || {};
+      saveLocal();
+      render();
     }
-    el.innerHTML=h;
-    bindPomo();
+    setSyncStatus('ok');
+  } catch(e) { setSyncStatus(''); }
+}
+
+async function driveSave() {
+  if (!state.driveToken) return;
+  setSyncStatus('busy');
+  const body = JSON.stringify({ todos: state.todos, notes: state.notes });
+  try {
+    if (state.driveFileId) {
+      await fetch(
+        `https://www.googleapis.com/upload/drive/v3/files/${state.driveFileId}?uploadType=media`,
+        { method: 'PATCH', headers: { Authorization: 'Bearer ' + state.driveToken, 'Content-Type': 'application/json' }, body }
+      );
+    } else {
+      const meta = await fetch(
+        'https://www.googleapis.com/drive/v3/files',
+        { method: 'POST', headers: { Authorization: 'Bearer ' + state.driveToken, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: DRIVE_FILE }) }
+      );
+      const mj = await meta.json();
+      state.driveFileId = mj.id;
+      await fetch(
+        `https://www.googleapis.com/upload/drive/v3/files/${state.driveFileId}?uploadType=media`,
+        { method: 'PATCH', headers: { Authorization: 'Bearer ' + state.driveToken, 'Content-Type': 'application/json' }, body }
+      );
+    }
+    setSyncStatus('ok');
+  } catch(e) { setSyncStatus(''); }
+}
+
+// ─── TABS ────────────────────────────────────
+function switchTab(tab) {
+  state.activeTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+
+  const todoPanel = document.getElementById('todo-panel');
+  const notesPanel = document.getElementById('notes-panel');
+
+  if (tab === 'notes') {
+    todoPanel.classList.remove('visible');
+    notesPanel.classList.add('visible');
+    renderSidebar();
+  } else {
+    todoPanel.classList.add('visible');
+    notesPanel.classList.remove('visible');
+    renderTodos();
+  }
+}
+
+// ─── TODOS ───────────────────────────────────
+function generateId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+
+function addTodo() {
+  const input = document.getElementById('new-todo-input');
+  const text = input.value.trim();
+  if (!text) return;
+  const cat = document.getElementById('cat-select').value;
+  state.todos.unshift({ id: generateId(), text, cat, done: false, createdAt: Date.now() });
+  input.value = '';
+  saveLocal();
+  renderTodos();
+}
+
+function toggleTodo(id) {
+  const t = state.todos.find(t => t.id === id);
+  if (t) { t.done = !t.done; saveLocal(); renderTodos(); }
+}
+
+function deleteTodo(id) {
+  state.todos = state.todos.filter(t => t.id !== id);
+  saveLocal(); renderTodos();
+}
+
+function renderTodos() {
+  const area = document.getElementById('todo-list-area');
+  const tab = state.activeTab;
+  let items;
+  if (tab === 'done') {
+    items = state.todos.filter(t => t.done);
+  } else {
+    items = state.todos.filter(t => !t.done && t.cat === tab);
+  }
+
+  // Update counts
+  ['privat','arbeit'].forEach(cat => {
+    document.getElementById('count-' + cat).textContent =
+      state.todos.filter(t => !t.done && t.cat === cat).length;
+  });
+  document.getElementById('count-notes').textContent = Object.keys(state.notes).length;
+
+  if (items.length === 0) {
+    area.innerHTML = `<div style="padding:40px 16px;text-align:center;color:var(--text-3);font-family:var(--mono);font-size:11px;letter-spacing:0.2em">KEINE AUFGABEN</div>`;
     return;
   }
 
-  // NORMAL + DONE VIEWS
-  if(!its.length){
-    const ic={private:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',work:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>',done:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'};
-    const tl={private:'Keine privaten Aufgaben',work:'Keine Arbeitsaufgaben',done:'Noch nichts erledigt'};
-    const su={private:'Tippe + um loszulegen',work:'Tippe + um loszulegen',done:'Erledigte Aufgaben landen hier'};
-    el.innerHTML=`<div class="ey"><div class="ey-i">${ic[S.tab]}</div><div class="ey-t">${tl[S.tab]}</div><div class="ey-s">${su[S.tab]}</div></div>`;return;
-  }
-
-  let h='';
-  if(S.tab==='done'&&its.length)h+=`<div class="cr"><button class="cr-b" id="clr">Alle erledigten löschen</button></div>`;
-
-  its.forEach(t=>{
-    const d=t.done,cl=t.cat==='private'?'Privat':'Arbeit',dt=fD(d?t.completedAt:t.createdAt);
-    const isFocused=t.focus&&!d;
-    h+=`<div class="td${d?' dn':''}" data-id="${t.id}">
-    ${d?`<button class="ck" data-a="re" data-id="${t.id}">${IC.restore}</button>`
-      :`<button class="ck" data-a="do" data-id="${t.id}">${IC.check}</button>`}
-    <div class="td-b"><div class="td-t">${esc(t.title)}</div><div class="td-m">${d?'<span class="bg">✓ '+cl+'</span>':cl} · ${dt}</div></div>
-    <div class="td-a">
-      ${!d?`<button class="ib foc${isFocused?' active':''}" data-a="${isFocused?'unfocus':'focus'}" data-id="${t.id}" title="${isFocused?'Aus Fokus entfernen':'In Fokus setzen'}">${IC.focus}</button>`:''}
-      <button class="ib" data-a="rm" data-id="${t.id}">${IC.trash}</button>
-    </div></div>`;
-  });
-  el.innerHTML=h;
-  const cb=$('clr');if(cb)cb.onclick=()=>{if(!confirm('Alle erledigten Aufgaben löschen?'))return;S.todos=S.todos.filter(t=>!t.done);autoS();render();toast('Erledigt-Liste geleert');};
+  area.innerHTML = items.map(t => `
+    <div class="todo-item${t.done ? ' done' : ''}" onclick="toggleTodo('${t.id}')">
+      <div class="todo-check"></div>
+      <div class="todo-text">${escHtml(t.text)}</div>
+      ${tab !== 'done' ? '' : `<div class="todo-cat">${t.cat}</div>`}
+      <button class="del-todo" onclick="event.stopPropagation();deleteTodo('${t.id}')" title="Löschen">×</button>
+    </div>
+  `).join('');
 }
 
-// ═══ POMODORO ═══
-function renderPomo(){
-  const circ=2*Math.PI*72; // radius 72
-  const prog=P.seconds/P.total;
-  const offset=circ*(1-prog);
-  const min=Math.floor(P.seconds/60);
-  const sec=P.seconds%60;
-  const timeStr=String(min).padStart(2,'0')+':'+String(sec).padStart(2,'0');
-  const label=P.isBreak?(P.round>POMO_ROUNDS?'Lange Pause':'Kurze Pause'):'Fokuszeit';
+// ─── NOTES ───────────────────────────────────
+function allNotes() {
+  return Object.values(state.notes).sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+}
 
-  let dots='';
-  for(let i=1;i<=POMO_ROUNDS;i++){
-    dots+=i<P.round?`<div class="pomo-dot-done"></div>`:`<div class="pomo-dot-pending"></div>`;
+function createNewNote(title = '') {
+  const id = generateId();
+  state.notes[id] = { id, title: title || 'Neue Notiz', content: '', updatedAt: Date.now() };
+  saveLocal();
+  renderSidebar();
+  openNote(id);
+  if (!title) {
+    const ti = document.getElementById('note-title-input');
+    ti.select();
   }
+}
 
-  return `<div class="pomo">
-    <div class="pomo-ring">
-      <svg class="pomo-svg" viewBox="0 0 160 160">
-        <circle class="pomo-bg" cx="80" cy="80" r="72"/>
-        <circle class="pomo-prog" cx="80" cy="80" r="72" stroke-dasharray="${circ}" stroke-dashoffset="${offset}"/>
-      </svg>
-      <div class="pomo-time">
-        <div class="pomo-digits">${timeStr}</div>
-        <div class="pomo-label">${label}</div>
+function deleteNote(id) {
+  if (!confirm('Notiz löschen?')) return;
+  delete state.notes[id];
+  if (state.activeNoteId === id) {
+    state.activeNoteId = null;
+    showNoteEmpty();
+  }
+  saveLocal();
+  renderSidebar();
+}
+
+function openNote(id) {
+  if (!state.notes[id]) return;
+  state.activeNoteId = id;
+  const note = state.notes[id];
+
+  document.getElementById('note-empty').style.display = 'none';
+  document.getElementById('editor-area').style.display = 'flex';
+
+  document.getElementById('note-title-input').value = note.title;
+  document.getElementById('md-editor').value = note.content || '';
+
+  renderSidebar();
+  updatePreview();
+  updateBacklinks();
+}
+
+function showNoteEmpty() {
+  document.getElementById('note-empty').style.display = '';
+  document.getElementById('editor-area').style.display = 'none';
+}
+
+function onTitleChange(val) {
+  if (!state.activeNoteId) return;
+  state.notes[state.activeNoteId].title = val;
+  state.notes[state.activeNoteId].updatedAt = Date.now();
+  saveLocal();
+  renderSidebar();
+}
+
+function filterNotes(q) {
+  renderSidebar(q);
+}
+
+function renderSidebar(query = '') {
+  document.getElementById('count-notes').textContent = Object.keys(state.notes).length;
+  let notes = allNotes();
+  if (query) {
+    const lq = query.toLowerCase();
+    notes = notes.filter(n =>
+      n.title.toLowerCase().includes(lq) || (n.content || '').toLowerCase().includes(lq)
+    );
+  }
+  const list = document.getElementById('note-list');
+  if (notes.length === 0) {
+    list.innerHTML = `<div style="padding:20px 14px;color:var(--text-3);font-size:12px;font-family:var(--mono)">Keine Notizen</div>`;
+    return;
+  }
+  list.innerHTML = notes.map(n => {
+    const preview = (n.content || '').replace(/#+\s/g,'').replace(/\*+/g,'').replace(/\[+[^\]]*\]+/g,'').slice(0, 60);
+    const date = n.updatedAt ? formatDate(n.updatedAt) : '';
+    return `
+      <div class="note-item${state.activeNoteId === n.id ? ' active' : ''}" onclick="openNote('${n.id}')">
+        <div class="note-item-title">${escHtml(n.title)}</div>
+        ${preview ? `<div class="note-item-preview">${escHtml(preview)}</div>` : ''}
+        <div class="note-item-date">${date}</div>
+        <button class="del-btn" onclick="event.stopPropagation();deleteNote('${n.id}')" title="Löschen">×</button>
       </div>
-    </div>
-    <div class="pomo-ctrl">
-      <button class="pomo-btn" id="pomoReset" title="Zurücksetzen">${IC.reset}</button>
-      <button class="pomo-btn primary${P.running?' running':''}" id="pomoToggle">${P.running?IC.pause:IC.play}</button>
-      <button class="pomo-btn" id="pomoSkip" title="Überspringen">${IC.skip}</button>
-    </div>
-    <div class="pomo-count">${dots}<span class="pomo-info">Runde ${Math.min(P.round,POMO_ROUNDS)}/${POMO_ROUNDS}</span></div>
-  </div>`;
+    `;
+  }).join('');
 }
 
-function bindPomo(){
-  const tog=$('pomoToggle'),res=$('pomoReset'),skip=$('pomoSkip');
-  if(!tog)return;
-  tog.onclick=()=>{
-    if(P.running){pomoPause();}else{pomoStart();}
-    render();
-  };
-  res.onclick=()=>{pomoReset();render();};
-  skip.onclick=()=>{pomoSkip();render();};
-}
+// ─── MARKDOWN + WIKI-LINKS ───────────────────
+function parseMarkdown(text) {
+  // Wiki links first (before other processing)
+  text = text.replace(/\[\[([^\]]+)\]\]/g, (match, title) => {
+    const existing = Object.values(state.notes).find(n => n.title.toLowerCase() === title.toLowerCase());
+    const cls = existing ? 'wiki-link' : 'wiki-link new-note';
+    const id = existing ? existing.id : '';
+    return `<a class="${cls}" data-note-id="${id}" data-note-title="${escHtml(title)}" onclick="wikiClick(this)">${escHtml(title)}</a>`;
+  });
 
-function pomoStart(){
-  P.running=true;P.paused=false;
-  clearInterval(P.interval);
-  P.interval=setInterval(()=>{
-    P.seconds--;
-    if(P.seconds<=0){pomoNext();return;}
-    if(S.tab==='focus')pomoTick();
-  },1000);
-}
+  // Headings
+  text = text.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+  text = text.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+  text = text.replace(/^# (.+)$/gm, '<h1>$1</h1>');
 
-function pomoTick(){
-  // Update only timer digits, ring progress, and label — no DOM rebuild
-  const digits=document.querySelector('.pomo-digits');
-  const prog=document.querySelector('.pomo-prog');
-  const label=document.querySelector('.pomo-label');
-  if(!digits||!prog)return;
-  const min=Math.floor(P.seconds/60);
-  const sec=P.seconds%60;
-  digits.textContent=String(min).padStart(2,'0')+':'+String(sec).padStart(2,'0');
-  const circ=2*Math.PI*72;
-  const offset=circ*(1-(P.seconds/P.total));
-  prog.style.strokeDashoffset=offset;
-  if(label)label.textContent=P.isBreak?(P.round>POMO_ROUNDS?'Lange Pause':'Kurze Pause'):'Fokuszeit';
-}
+  // Code blocks
+  text = text.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
 
-function pomoPause(){P.running=false;P.paused=true;clearInterval(P.interval);}
+  // Inline code
+  text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
 
-function pomoReset(){
-  clearInterval(P.interval);
-  P.running=false;P.paused=false;P.isBreak=false;P.round=1;
-  P.seconds=POMO_WORK;P.total=POMO_WORK;
-}
+  // Bold, italic
+  text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
 
-function pomoSkip(){
-  clearInterval(P.interval);P.running=false;
-  pomoNext();
-}
+  // HR
+  text = text.replace(/^---$/gm, '<hr>');
 
-function pomoNext(){
-  clearInterval(P.interval);P.running=false;
-  if(P.isBreak){
-    // Break ended → next work round
-    P.isBreak=false;P.seconds=POMO_WORK;P.total=POMO_WORK;
-    toast('Pause vorbei — weiter geht\'s!');
-    tryNotify('Pause vorbei','Weiter geht\'s! 💪');
-  } else {
-    // Work ended → break
-    P.round++;
-    P.isBreak=true;
-    if(P.round>POMO_ROUNDS){
-      P.seconds=POMO_LONG;P.total=POMO_LONG;
-      toast('Lange Pause — gut gemacht!');
-      tryNotify('Runde komplett!','Zeit für eine lange Pause 🎉');
-      P.round=1; // reset after long break
+  // Blockquote
+  text = text.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
+
+  // Unordered list
+  text = text.replace(/^[-*] (.+)$/gm, '<li>$1</li>');
+  text = text.replace(/(<li>.*<\/li>\n?)+/g, s => '<ul>' + s + '</ul>');
+
+  // Ordered list
+  text = text.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+
+  // Links
+  text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+
+  // Paragraphs — wrap remaining lines
+  const lines = text.split('\n');
+  const out = [];
+  let inBlock = false;
+  for (let line of lines) {
+    if (/^<(h[1-6]|ul|ol|pre|blockquote|hr|li)/.test(line) || line === '') {
+      if (inBlock) { out.push('</p>'); inBlock = false; }
+      out.push(line);
     } else {
-      P.seconds=POMO_SHORT;P.total=POMO_SHORT;
-      toast('Kurze Pause');
-      tryNotify('Fokuszeit vorbei','Kurze Pause einlegen ☕');
+      if (!inBlock) { out.push('<p>'); inBlock = true; }
+      out.push(line);
     }
   }
-  if(S.tab==='focus')render();
+  if (inBlock) out.push('</p>');
+  return out.join('\n');
 }
 
-function tryNotify(title,body){
-  if('Notification' in window&&Notification.permission==='granted'){
-    new Notification(title,{body,icon:'icon-192.png',badge:'icon-192.png'});
+function updatePreview() {
+  const content = document.getElementById('md-editor').value;
+  if (state.activeNoteId) {
+    state.notes[state.activeNoteId].content = content;
+    state.notes[state.activeNoteId].updatedAt = Date.now();
+  }
+  document.getElementById('md-preview').innerHTML = parseMarkdown(content);
+  saveLocal();
+  renderSidebar();
+  updateBacklinks();
+}
+
+function wikiClick(el) {
+  const id = el.dataset.noteId;
+  const title = el.dataset.noteTitle;
+  if (id && state.notes[id]) {
+    openNote(id);
+  } else {
+    // Create note with this title and open
+    createNewNote(title);
   }
 }
 
-// ═══ TODO OPS ═══
-function add(t,c){S.todos.push({id:uid(),title:t.trim(),cat:c,done:false,focus:false,createdAt:Date.now(),updatedAt:Date.now(),completedAt:null});autoS();render();}
-function an(id,cb){const e=document.querySelector(`[data-id="${id}"]`);if(e&&e.classList.contains('td')){e.classList.add('out');setTimeout(cb,240);}else cb();}
-function comp(id){an(id,()=>{const t=S.todos.find(x=>x.id===id);if(t){t.done=true;t.focus=false;t.completedAt=Date.now();t.updatedAt=Date.now();}autoS();render();toast('Erledigt ✓');});}
-function rest(id){an(id,()=>{const t=S.todos.find(x=>x.id===id);if(t){t.done=false;t.completedAt=null;t.updatedAt=Date.now();}autoS();render();toast('Wiederhergestellt');});}
-function rm(id){an(id,()=>{S.todos=S.todos.filter(x=>x.id!==id);autoS();render();});}
-function toggleFocus(id){const t=S.todos.find(x=>x.id===id);if(t){t.focus=!t.focus;t.updatedAt=Date.now();autoS();render();toast(t.focus?'Im Fokus ◎':'Fokus entfernt');}}
-
-// ═══ EVENTS ═══
-let _ev=false;
-function ev(){
-  if(_ev)return;_ev=true;
-
-  document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
-    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
-    t.classList.add('on');S.tab=t.dataset.t;render();
+// ─── BACKLINKS ───────────────────────────────
+function updateBacklinks() {
+  if (!state.activeNoteId) return;
+  const currentTitle = (state.notes[state.activeNoteId]?.title || '').toLowerCase();
+  const linked = Object.values(state.notes).filter(n => {
+    if (n.id === state.activeNoteId) return false;
+    const wikiLinks = [...(n.content || '').matchAll(/\[\[([^\]]+)\]\]/g)].map(m => m[1].toLowerCase());
+    return wikiLinks.includes(currentTitle);
   });
 
-  $('fab').onclick=oM;$('mN').onclick=cM;$('ov').onclick=e=>{if(e.target===e.currentTarget)cM();};
-  const inp=$('inp');
-  inp.oninput=()=>{$('mY').disabled=!inp.value.trim();};
-  inp.onkeydown=e=>{if(e.key==='Enter'&&inp.value.trim())cfm();};
-  $('mY').onclick=cfm;
-  document.querySelectorAll('.ch').forEach(c=>c.onclick=()=>{document.querySelectorAll('.ch').forEach(x=>x.classList.remove('on'));c.classList.add('on');});
-
-  $('ls').addEventListener('click',e=>{
-    const b=e.target.closest('[data-a]');if(!b)return;
-    const{a,id}=b.dataset;
-    if(a==='do')comp(id);else if(a==='re')rest(id);else if(a==='rm')rm(id);
-    else if(a==='focus'||a==='unfocus')toggleFocus(id);
-  });
-
-  document.addEventListener('keydown',e=>{
-    if(e.key==='n'&&!e.ctrlKey&&!e.metaKey&&document.activeElement.tagName!=='INPUT'){e.preventDefault();oM();}
-    if(e.key==='Escape')cM();
-    if(e.key===' '&&S.tab==='focus'&&document.activeElement.tagName!=='INPUT'){e.preventDefault();if(P.running)pomoPause();else pomoStart();render();}
-  });
-
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.online)driveLoad();});
-
-  // Request notification permission on focus tab
-  if('Notification' in window&&Notification.permission==='default'){
-    Notification.requestPermission();
+  const list = document.getElementById('backlinks-list');
+  if (linked.length === 0) {
+    list.innerHTML = `<div style="padding:12px;color:var(--text-3);font-size:11px;font-family:var(--mono)">Keine Rückverlinkungen</div>`;
+    return;
   }
-
-  let dp=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;$('ip').classList.add('s');});
-  $('ipG').onclick=async()=>{if(dp){dp.prompt();await dp.userChoice;dp=null;}$('ip').classList.remove('s');};
-  $('ipX').onclick=()=>$('ip').classList.remove('s');
+  list.innerHTML = linked.map(n =>
+    `<div class="bl-item" onclick="openNote('${n.id}')">
+      <span class="bl-arrow">←</span>${escHtml(n.title)}
+    </div>`
+  ).join('');
 }
 
-function oM(){$('ov').classList.add('o');const c=S.tab==='done'||S.tab==='focus'?'private':S.tab;document.querySelectorAll('.ch').forEach(x=>x.classList.toggle('on',x.dataset.c===c));setTimeout(()=>$('inp').focus(),280);}
-function cM(){$('ov').classList.remove('o');$('inp').value='';$('mY').disabled=true;}
-function cfm(){const v=$('inp').value.trim(),c=document.querySelector('.ch.on')?.dataset.c||'private';if(!v)return;add(v,c);cM();S.tab=c;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.t===c));render();toast('Aufgabe hinzugefügt');}
+function toggleBacklinks() {
+  state.backlinksVisible = !state.backlinksVisible;
+  document.getElementById('backlinks-panel').classList.toggle('visible', state.backlinksVisible);
+  document.getElementById('bl-btn').style.color = state.backlinksVisible ? 'var(--red)' : '';
+  updateBacklinks();
+}
 
-// ═══ UTIL ═══
-function fD(ts){if(!ts)return'';const df=Date.now()-ts,m=Math.floor(df/6e4),h=Math.floor(df/36e5),dy=Math.floor(df/864e5);if(m<1)return'gerade eben';if(m<60)return`vor ${m} Min`;if(h<24)return`vor ${h} Std`;if(dy===1)return'Gestern';if(dy<7)return`vor ${dy} Tagen`;return new Date(ts).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'});}
-function tNow(){return new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});}
-function toast(m){const t=$('tt');t.textContent=m;t.classList.add('s');clearTimeout(t._);t._=setTimeout(()=>t.classList.remove('s'),2200);}
-function setD(s){$('dot').className='dot'+(s?' '+s:'');}
-function setSB(c,t){const b=$('syncb');b.className='syncb'+(c?' '+c:'');b.textContent=t;}
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+// ─── SPLIT VIEW ──────────────────────────────
+function toggleSplit() {
+  state.splitView = !state.splitView;
+  document.getElementById('editor-body').classList.toggle('split', state.splitView);
+  document.getElementById('split-btn').style.color = state.splitView ? 'var(--red)' : '';
+  if (state.splitView) updatePreview();
+}
+
+// ─── EDITOR HELPERS ──────────────────────────
+function wrapSelection(before, after) {
+  const ta = document.getElementById('md-editor');
+  const s = ta.selectionStart, e = ta.selectionEnd;
+  const sel = ta.value.slice(s, e);
+  ta.setRangeText(before + sel + after, s, e, 'end');
+  ta.focus();
+  updatePreview();
+}
+
+function insertLine(prefix) {
+  const ta = document.getElementById('md-editor');
+  const s = ta.selectionStart;
+  const lineStart = ta.value.lastIndexOf('\n', s - 1) + 1;
+  ta.setRangeText(prefix, lineStart, lineStart, 'start');
+  ta.focus();
+  updatePreview();
+}
+
+function insertWikiLink() {
+  const ta = document.getElementById('md-editor');
+  const s = ta.selectionStart;
+  const sel = ta.value.slice(s, ta.selectionEnd);
+  ta.setRangeText('[[' + (sel || '') + ']]', s, ta.selectionEnd, 'end');
+  ta.focus();
+  showAutocomplete('');
+}
+
+// ─── AUTOCOMPLETE FOR [[…]] ──────────────────
+let acActive = false;
+let acQuery = '';
+let acStart = -1;
+let acSelected = 0;
+
+document.addEventListener('DOMContentLoaded', () => {
+  const ta = document.getElementById('md-editor');
+
+  ta.addEventListener('input', () => {
+    updatePreview();
+    checkForWikiLink();
+  });
+
+  ta.addEventListener('keydown', e => {
+    if (!acActive) return;
+    const items = document.querySelectorAll('.ac-item');
+    if (e.key === 'ArrowDown') { e.preventDefault(); acSelected = Math.min(acSelected + 1, items.length - 1); highlightAC(); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); acSelected = Math.max(acSelected - 1, 0); highlightAC(); }
+    else if (e.key === 'Enter' || e.key === 'Tab') {
+      e.preventDefault();
+      const sel = document.querySelector('.ac-item.selected');
+      if (sel) sel.click();
+    } else if (e.key === 'Escape') closeAutocomplete();
+  });
+
+  ta.addEventListener('blur', () => setTimeout(closeAutocomplete, 200));
+});
+
+function checkForWikiLink() {
+  const ta = document.getElementById('md-editor');
+  const pos = ta.selectionStart;
+  const before = ta.value.slice(0, pos);
+  const m = before.match(/\[\[([^\]\n]*)$/);
+  if (m) {
+    acStart = before.length - m[0].length;
+    acQuery = m[1];
+    showAutocomplete(acQuery);
+  } else {
+    closeAutocomplete();
+  }
+}
+
+function showAutocomplete(query) {
+  acActive = true;
+  acSelected = 0;
+  const notes = allNotes();
+  const lq = query.toLowerCase();
+  let matches = notes.filter(n => n.id !== state.activeNoteId && n.title.toLowerCase().includes(lq));
+
+  const el = document.getElementById('autocomplete');
+  const items = document.getElementById('ac-items');
+
+  const exactMatch = notes.some(n => n.title.toLowerCase() === lq);
+  const createRow = (!exactMatch && query.trim())
+    ? `<div class="ac-item create-new" onclick="acSelectCreate('${escHtml(query.trim())}')">
+         <span class="ac-icon">+</span> «${escHtml(query.trim())}» erstellen
+       </div>` : '';
+
+  items.innerHTML = matches.slice(0, 8).map((n, i) =>
+    `<div class="ac-item${i === 0 ? ' selected' : ''}" onclick="acSelect('${n.id}')">
+       <span class="ac-icon">◈</span>${escHtml(n.title)}
+     </div>`
+  ).join('') + createRow;
+
+  if (items.children.length === 0) { closeAutocomplete(); return; }
+
+  // Position near cursor
+  const ta = document.getElementById('md-editor');
+  const coords = getCaretCoords(ta);
+  el.style.left = coords.x + 'px';
+  el.style.top = (coords.y + 20) + 'px';
+  el.classList.add('visible');
+}
+
+function highlightAC() {
+  document.querySelectorAll('.ac-item').forEach((el, i) =>
+    el.classList.toggle('selected', i === acSelected)
+  );
+}
+
+function acSelect(noteId) {
+  const note = state.notes[noteId];
+  if (!note) return;
+  completeWikiLink(note.title);
+}
+
+function acSelectCreate(title) {
+  completeWikiLink(title);
+  // Create the note immediately
+  if (!Object.values(state.notes).find(n => n.title.toLowerCase() === title.toLowerCase())) {
+    const id = generateId();
+    state.notes[id] = { id, title, content: '', updatedAt: Date.now() };
+    saveLocal();
+    renderSidebar();
+  }
+}
+
+function completeWikiLink(title) {
+  const ta = document.getElementById('md-editor');
+  const pos = ta.selectionStart;
+  const before = ta.value.slice(0, pos);
+  const m = before.match(/\[\[([^\]\n]*)$/);
+  if (!m) return closeAutocomplete();
+
+  const startIdx = before.length - m[0].length;
+  const endIdx = pos;
+  const after = ta.value.slice(endIdx);
+  // Remove closing ]] if already typed
+  const cleanAfter = after.startsWith(']]') ? after.slice(2) : after;
+  ta.value = ta.value.slice(0, startIdx) + '[[' + title + ']]' + cleanAfter;
+  const newPos = startIdx + title.length + 4;
+  ta.setSelectionRange(newPos, newPos);
+  ta.focus();
+  closeAutocomplete();
+  updatePreview();
+}
+
+function closeAutocomplete() {
+  acActive = false;
+  document.getElementById('autocomplete').classList.remove('visible');
+}
+
+// Rough caret position estimation
+function getCaretCoords(el) {
+  const rect = el.getBoundingClientRect();
+  return { x: rect.left + 20, y: rect.top + 40 };
+}
+
+// ─── MISC HELPERS ────────────────────────────
+function handleNew() {
+  if (state.activeTab === 'notes') createNewNote();
+  else document.getElementById('new-todo-input').focus();
+}
+
+function escHtml(str) {
+  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function formatDate(ts) {
+  const d = new Date(ts);
+  const now = new Date();
+  if (d.toDateString() === now.toDateString()) return d.toLocaleTimeString('de', {hour:'2-digit',minute:'2-digit'});
+  return d.toLocaleDateString('de', {day:'2-digit', month:'2-digit'});
+}
+
+// ─── KEYBOARD ────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
+  if (e.key === 'n' || e.key === 'N') handleNew();
+});
+
+// ─── INIT ────────────────────────────────────
+const HARDCODED_CLIENT_ID = '368244766898-da615t6bjr0q8lr0ujvqa362dd3c999q.apps.googleusercontent.com';
+
+function render() {
+  renderTodos();
+  renderSidebar();
+}
+
+loadLocal();
+state.driveClientId = HARDCODED_CLIENT_ID;
+localStorage.setItem('drive_client_id', HARDCODED_CLIENT_ID);
+render();
+
+// Handle OAuth redirect
+const hash = new URLSearchParams(location.hash.slice(1));
+if (hash.get('access_token')) {
+  state.driveToken = hash.get('access_token');
+  history.replaceState(null, '', location.pathname);
+  driveLoad();
+}
+
+// Pre-fill modal & show connect hint
+document.getElementById('client-id-input').value = HARDCODED_CLIENT_ID;
+if (!state.driveToken) {
+  setSyncStatus('');
+  // Show subtle connect hint in sync label
+  document.getElementById('sync-label').textContent = '☁ verbinden';
+}
 </script>
 </body>
 </html>
