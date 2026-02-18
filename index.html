@@ -556,10 +556,11 @@ textarea { resize: none; }
   line-height: 1.75;
   color: var(--w50);
   display: none;
+  background: var(--bg);
+  z-index: 2;
 }
 #ed-preview::-webkit-scrollbar { display: none; }
 #ed-preview.visible { display: block; }
-#ed-preview.visible ~ #ed-textarea { display: none; }
 
 /* Markdown render */
 #ed-preview h1 { font-family: var(--mono); font-size: 17px; color: var(--w80); margin: 1.2em 0 .5em; border-bottom: 1px solid var(--brd); padding-bottom: 6px; }
@@ -1319,6 +1320,7 @@ function openNote(id, selectTitle = false) {
   document.getElementById('ed-textarea').value = note.content || '';
   previewMode = false;
   document.getElementById('ed-preview').classList.remove('visible');
+  document.getElementById('ed-textarea').style.display = '';
   document.getElementById('tb-preview').classList.remove('preview-on');
   document.getElementById('note-editor').classList.add('open');
   updateBacklinks();
@@ -1410,15 +1412,19 @@ function parseMarkdown(text) {
 function togglePreview() {
   previewMode = !previewMode;
   const prev = document.getElementById('ed-preview');
-  const btn = document.getElementById('tb-preview');
+  const txa  = document.getElementById('ed-textarea');
+  const btn  = document.getElementById('tb-preview');
   if (previewMode) {
     flushNoteContent();
-    prev.innerHTML = parseMarkdown(document.getElementById('ed-textarea').value);
+    prev.innerHTML = parseMarkdown(txa.value);
     prev.classList.add('visible');
+    txa.style.display = 'none';
     btn.classList.add('preview-on');
   } else {
     prev.classList.remove('visible');
+    txa.style.display = '';
     btn.classList.remove('preview-on');
+    txa.focus();
   }
 }
 
