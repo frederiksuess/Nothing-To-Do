@@ -1449,36 +1449,60 @@ function updateBacklinks() {
 }
 
 // ──────────────────────────────────────────────────
-// WIKI AUTOCOMPLETE
+// WIKI AUTOCOMPLETE + AUTO-CREATE
 // ──────────────────────────────────────────────────
 let acActive = false, acSel = 0;
 
 const ta = () => document.getElementById('ed-textarea');
 
+// Called on every keystroke in the textarea
 function checkWikiLink() {
-  const v = ta().value, pos = ta().selectionStart;
+  const el = ta();
+  const v = el.value, pos = el.selectionStart;
   const before = v.slice(0, pos);
-  const m = before.match(/\[\[([^\]\n]*)$/);
-  if (m) { showAC(m[1]); }
-  else closeAC();
+
+  // Detect just-completed [[title]] — auto-create note, close popup
+  const closed = before.match(/\[\[([^\]\n]+)\]\]$/);
+  if (closed) {
+    const title = closed[1].trim();
+    if (title) ensureNoteExists(title);
+    closeAC();
+    return;
+  }
+
+  // Still typing inside [[...
+  const open = before.match(/\[\[([^\]\n]*)$/);
+  if (open) { showAC(open[1]); }
+  else { closeAC(); }
+}
+
+// Creates a note with given title if it doesn't already exist
+function ensureNoteExists(title) {
+  const existing = Object.values(S.notes).find(n => n.title.toLowerCase() === title.toLowerCase());
+  if (!existing) {
+    const id = uid();
+    S.notes[id] = { id, title, content: '', updatedAt: Date.now() };
+    saveLocal();
+    toast('Notiz «' + title + '» erstellt');
+  }
 }
 
 function showAC(q) {
   acActive = true; acSel = 0;
   const notes = allNotes().filter(n => n.id !== activeNoteId && n.title.toLowerCase().includes(q.toLowerCase())).slice(0, 8);
-  const exact = notes.some(n => n.title.toLowerCase() === q.toLowerCase());
   const popup = document.getElementById('ac-popup');
   const list = document.getElementById('ac-list');
-  const createRow = (!exact && q.trim())
-    ? `<div class="ac-opt new-opt" onclick="acCreate('${q.replace(/'/g,"\\'")}')"><span class="ac-icon">+</span> «${esc(q)}» erstellen</div>` : '';
+
+  // Only existing notes — creation is automatic on ]]
   list.innerHTML = notes.map((n,i) =>
     `<div class="ac-opt${i===0?' sel':''}" onclick="acSelect('${n.id}')"><span class="ac-icon">◈</span>${esc(n.title)}</div>`
-  ).join('') + createRow;
+  ).join('');
+
   if (!list.children.length) { closeAC(); return; }
-  // Position near textarea
+
   const r = ta().getBoundingClientRect();
   popup.style.left = Math.max(10, r.left + 10) + 'px';
-  popup.style.top = Math.min(r.bottom - 120, window.innerHeight - 200) + 'px';
+  popup.style.top = Math.min(r.bottom - 140, window.innerHeight - 220) + 'px';
   popup.classList.add('show');
 }
 
@@ -1487,17 +1511,11 @@ function closeAC() { acActive = false; document.getElementById('ac-popup').class
 function acSelect(id) {
   const note = S.notes[id];
   if (!note) return;
-  completeWiki(note.title);
+  replaceOpenWiki(note.title);
 }
-function acCreate(title) {
-  completeWiki(title);
-  if (!Object.values(S.notes).some(n => n.title.toLowerCase() === title.toLowerCase())) {
-    const id = uid();
-    S.notes[id] = { id, title, content: '', updatedAt: Date.now() };
-    saveLocal();
-  }
-}
-function completeWiki(title) {
+
+// Replace open [[query with [[chosen title]]
+function replaceOpenWiki(title) {
   const el = ta();
   const pos = el.selectionStart;
   const before = el.value.slice(0, pos);
@@ -1510,8 +1528,8 @@ function completeWiki(title) {
   el.setSelectionRange(np, np);
   el.focus();
   closeAC();
-  if (!previewMode) { /* just keep textarea */ }
-  saveLocal();
+  ensureNoteExists(title);
+  flushNoteContent();
 }
 
 // Editor toolbar helpers
