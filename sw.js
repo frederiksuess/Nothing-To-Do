@@ -1,39 +1,43 @@
-const CACHE = 'nothing-todo-v3';
-const ASSETS = ['./', './index.html', './manifest.json'];
+const CACHE = 'ntd-v5';
+const ASSETS = [
+  './',
+  './index.html',
+  './manifest.json',
+  './icon-192x192.png',
+  './icon-512x512.png',
+  'https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap'
+];
 
-self.addEventListener('install', function(e) {
-  e.waitUntil(caches.open(CACHE).then(function(c) { return c.addAll(ASSETS); }));
-  self.skipWaiting();
-});
-
-self.addEventListener('activate', function(e) {
+self.addEventListener('install', e => {
   e.waitUntil(
-    caches.keys().then(function(keys) {
-      return Promise.all(
-        keys.filter(function(k) { return k !== CACHE; })
-            .map(function(k) { return caches.delete(k); })
-      );
-    })
+    caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting())
   );
-  self.clients.claim();
 });
 
-self.addEventListener('fetch', function(e) {
-  var url = e.request.url;
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+    ).then(() => self.clients.claim())
+  );
+});
 
-  // Only handle http/https requests — skip extensions, data URIs, etc.
-  if (!url.startsWith('http')) return;
-
-  // Skip Google API calls
-  if (url.includes('googleapis.com') || url.includes('accounts.google.com')) return;
-
+self.addEventListener('fetch', e => {
+  // Network first for Google APIs, cache first for everything else
+  if (e.request.url.includes('googleapis.com') || e.request.url.includes('accounts.google.com')) {
+    e.respondWith(fetch(e.request).catch(() => new Response('', { status: 503 })));
+    return;
+  }
   e.respondWith(
-    fetch(e.request).then(function(response) {
-      var clone = response.clone();
-      caches.open(CACHE).then(function(cache) { cache.put(e.request, clone); });
-      return response;
-    }).catch(function() {
-      return caches.match(e.request);
+    caches.match(e.request).then(cached => {
+      if (cached) return cached;
+      return fetch(e.request).then(resp => {
+        if (resp && resp.status === 200 && resp.type === 'basic') {
+          const clone = resp.clone();
+          caches.open(CACHE).then(c => c.put(e.request, clone));
+        }
+        return resp;
+      }).catch(() => caches.match('./index.html'));
     })
   );
 });

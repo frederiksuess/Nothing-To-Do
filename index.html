@@ -10,6 +10,11 @@
 <title>Nothing To-Do</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192x192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="N·OS">
 <script src="https://accounts.google.com/gsi/client" async></script>
 <style>
 :root {
@@ -645,6 +650,13 @@ document.getElementById('ed-title').addEventListener('blur',flushNote);
 // INIT
 load();render();pomoRender();
 document.getElementById('ds-input').value=CLIENT_ID;
+
+// SERVICE WORKER
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  });
+}
 </script>
 </body>
 </html>
