@@ -9,7 +9,10 @@
   "background_color": "#000000",
   "theme_color": "#000000",
   "lang": "de",
-  "categories": ["productivity", "utilities"],
+  "categories": [
+    "productivity",
+    "utilities"
+  ],
   "icons": [
     {
       "src": "icon-72x72.png",
@@ -79,14 +82,30 @@
       "short_name": "Aufgabe",
       "description": "Neue Aufgabe hinzufügen",
       "url": "/Nothing-To-Do/",
-      "icons": [{ "src": "icon-96x96.png", "sizes": "96x96" }]
+      "icons": [
+        {
+          "src": "icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
     },
     {
       "name": "Neue Notiz",
       "short_name": "Notiz",
       "description": "Neue Notiz erstellen",
       "url": "/Nothing-To-Do/",
-      "icons": [{ "src": "icon-96x96.png", "sizes": "96x96" }]
+      "icons": [
+        {
+          "src": "icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
     }
+  ],
+  "display_override": [
+    "standalone",
+    "fullscreen",
+    "minimal-ui",
+    "browser"
   ]
 }
